@@ -1,7 +1,6 @@
 <div align="center">
-    <h1>ConnectFit</h1>
     <code><img src='./Connect.png'></code>
-    <p>Gabriel Carvalho</p>
+    <h2>Gabriel Carvalho</h2>
 </div>
 
 1. Qual o problema?
