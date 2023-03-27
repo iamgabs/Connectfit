@@ -31,4 +31,5 @@ físicas em 2019, foi 7,4% maior comparado ao ano de 2013, número que represent
 
 > O objetivo será fazer um mvp para validar o projeto, dessa forma, as funcionalidades iniciais serão as mais básicas possíveis, como cadastro de profissionais e alunos e cadastro de treinos e anamneses.
 
-link documento de requisitos > 
+link documento de requisitos > https://github.com/iamgabs/Connectfit/blob/main/DocumentoderequisitosConnectFit.pdf
+
