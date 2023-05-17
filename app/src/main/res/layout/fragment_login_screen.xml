@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#232222">
+    android:background="#232222"
+    android:id="@+id/loginScreenFragment"
+    tools:context=".LoginScreenFragment">
 
     <ImageView
         android:id="@+id/imageViewBackground"
@@ -17,7 +19,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        tools:context=".LoginScreenFragment">
+        >
 
         <TextView
             android:id="@+id/textView"
@@ -73,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="3sp"
-                android:background="#8C52FF"
+                android:background="@drawable/rounded_edit_text"
                 android:minWidth="110sp"
                 android:text="@string/logar"
                 android:textColor="#000000" />

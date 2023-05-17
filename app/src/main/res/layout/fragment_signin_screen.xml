@@ -1,14 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/signinScreenFragment"
+    android:background="#232222"
     tools:context=".SigninScreenFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+        android:id="@+id/imageViewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/design1"
+        android:scaleType="fitXY"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="center"
+        android:orientation="vertical"
+        >
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-20sp"
+            android:layout_marginBottom="20sp"
+            android:fontFamily="sans-serif-thin"
+            android:text="@string/signin"
+            android:textColor="#ffffff"
+            android:textSize="60sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:layout_width="323dp"
+            android:paddingStart="10sp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/nome"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
+        <EditText
+            android:layout_width="323dp"
+            android:paddingStart="10sp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
+        <EditText
+            android:layout_width="327dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20sp"
+            android:paddingStart="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/senha"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButtonStudent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sou_aluno"
+                android:textColor="#8C52FF"/>
+
+            <RadioButton
+                android:id="@+id/radioButtonPersonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sou_personal"
+                android:textColor="#8C52FF"/>
+
+            <RadioButton
+                android:id="@+id/radioButtonNutricionista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sou_nutricionista"
+                android:textColor="#8C52FF"/>
+        </RadioGroup>
+    </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <Button
+                android:id="@+id/signinButton"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="3sp"
+                android:background="@drawable/rounded_edit_text"
+                android:minWidth="110sp"
+                android:text="@string/logar"
+                android:textColor="#000000" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/signinGoogle"
+                android:minHeight="30sp"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/changeScreenFromSigninToLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15sp"
+            android:background="#232222"
+            android:text="Já possui uma conta? Entre!"
+            android:textColor="#ffffff" />
+
+
+    </LinearLayout>
+</RelativeLayout>

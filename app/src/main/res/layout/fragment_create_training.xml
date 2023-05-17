@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateTrainingFragment" >
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view_tag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.example.connectfit.HeaderComponentFragment"
+        tools:layout="@layout/fragment_header_component"/>
+
+    <LinearLayout
+        android:layout_width="411dp"
+        android:layout_height="303dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.205">
+
+        <TextView
+            android:id="@+id/titleTrainning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="10sp"
+            android:text="Criar treino"
+            android:textColor="#F6F0F0"
+            android:textSize="34sp" />
+
+        <EditText
+            android:id="@+id/editTextTrainningName"
+            android:layout_width="323dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/nome"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:paddingStart="10sp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
+        <EditText
+            android:id="@+id/editTextTrainningDescription"
+            android:layout_width="323dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/descri_o"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:paddingStart="10sp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
+        <EditText
+            android:id="@+id/editTextTrainningAmount"
+            android:layout_width="323dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/quantidade_de_repeti_es"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:paddingStart="10sp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="3sp"
+                android:layout_marginEnd="3sp"
+                android:background="@drawable/rounded_edit_text"
+                android:minWidth="110sp"
+                android:text="@string/adicionar"
+                android:textColor="#000000" />
+
+            <Button
+                android:id="@+id/createButton"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="3sp"
+                android:layout_marginStart="3sp"
+                android:background="@drawable/rounded_edit_text"
+                android:minWidth="110sp"
+                android:text="@string/finalizar_treino"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="415dp"
+        android:layout_height="282dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
+        app:layout_constraintVertical_bias="1.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>

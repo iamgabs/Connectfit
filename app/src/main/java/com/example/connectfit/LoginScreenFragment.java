@@ -6,7 +6,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +22,7 @@ public class LoginScreenFragment extends Fragment {
 
 
     FragmentLoginScreenBinding binding;
-    GoogleSignInClient googleSignInClient;
+//    GoogleSignInClient googleSignInClient;
 
     public LoginScreenFragment() {
         super(R.layout.fragment_login_screen);
@@ -40,11 +42,13 @@ public class LoginScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView txtGoogleButton = (TextView) binding.loginGoogle.getChildAt(0);
-        txtGoogleButton.setText(R.string.login_gogle);
+//        TextView txtGoogleButton = (TextView) binding.loginGoogle.getChildAt(0);
+//        txtGoogleButton.setText(R.string.login_gogle);
 
         // action to SigninScreenFragment
         View buttonChangeToSigninScreen = binding.changeScreenFromLoginToSignin;
-        buttonChangeToSigninScreen.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginScreenFragment_to_signinScreenFragment, null));
+        buttonChangeToSigninScreen.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_loginScreenFragment_to_signinScreenFragment));
+
+
     }
 }
