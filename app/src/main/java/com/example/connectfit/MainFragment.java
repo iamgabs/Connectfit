@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.connectfit.databinding.FragmentMainBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainFragment extends Fragment {
 
@@ -32,6 +33,11 @@ public class MainFragment extends Fragment {
         return  binding.getRoot();
     }
 
+    /**
+     * @function onViewCreated should be responsible
+     * to start splash and call next screen
+     * after 5000 milliseconds
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

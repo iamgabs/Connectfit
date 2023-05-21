@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_loginScreenFragment_to_signinScreenFragment"
             app:destination="@id/signinScreenFragment" />
+        <action
+            android:id="@+id/action_loginScreenFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragment_splash"
@@ -30,6 +33,9 @@
         <action
             android:id="@+id/action_signinScreenFragment_to_loginScreenFragment"
             app:destination="@id/loginScreenFragment" />
+        <action
+            android:id="@+id/action_signinScreenFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"

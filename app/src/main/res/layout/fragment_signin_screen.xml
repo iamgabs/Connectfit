@@ -34,6 +34,7 @@
             android:textStyle="bold" />
 
         <EditText
+            android:id="@+id/signinUserName"
             android:layout_width="323dp"
             android:paddingStart="10sp"
             android:layout_height="wrap_content"
@@ -48,6 +49,7 @@
             android:textColorHint="#000000" />
 
         <EditText
+            android:id="@+id/signinUserEmail"
             android:layout_width="323dp"
             android:paddingStart="10sp"
             android:layout_height="wrap_content"
@@ -63,6 +65,7 @@
             android:textColorHint="#000000" />
 
         <EditText
+            android:id="@+id/signinUserPassword"
             android:layout_width="327dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20sp"
@@ -82,6 +85,7 @@
         android:layout_gravity="center">
 
         <RadioGroup
+            android:id="@+id/radioGroup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
