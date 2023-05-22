@@ -21,13 +21,14 @@
         android:id="@+id/imageButton4"
         android:layout_width="159dp"
         android:layout_height="157dp"
-        android:background="#8C52FF"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="113dp"
         android:layout_marginEnd="10dp"
-        android:scaleType="centerCrop"
+        android:background="#8C52FF"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toStartOf="@+id/imageButton"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="184dp"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
         tools:src="@drawable/mytrainning" />
 
     <ImageButton
@@ -35,13 +36,13 @@
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="29dp"
+        android:layout_marginTop="185dp"
         android:layout_marginEnd="10dp"
         android:background="#8C52FF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toStartOf="@+id/imageButton2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton4"
+        app:layout_constraintTop_toTopOf="@+id/imageButton4"
         tools:src="@drawable/settings" />
 
     <ImageButton
@@ -63,12 +64,13 @@
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="31dp"
+        android:layout_marginTop="113dp"
         android:layout_marginEnd="37dp"
         android:background="#8C52FF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageButton4"
-        tools:layout_editor_absoluteY="184dp"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
         tools:src="@drawable/search" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

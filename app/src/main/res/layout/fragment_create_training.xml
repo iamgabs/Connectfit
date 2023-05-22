@@ -14,8 +14,8 @@
         tools:layout="@layout/fragment_header_component"/>
 
     <LinearLayout
-        android:layout_width="411dp"
-        android:layout_height="303dp"
+        android:layout_width="441dp"
+        android:layout_height="336dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,9 +29,9 @@
             android:id="@+id/titleTrainning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginBottom="10sp"
-            android:text="Criar treino"
+            android:gravity="center"
+            android:text="@string/criar_treino"
             android:textColor="#F6F0F0"
             android:textSize="34sp" />
 
@@ -80,6 +80,21 @@
             android:textColor="#ffffff"
             android:textColorHint="#000000" />
 
+        <EditText
+            android:id="@+id/editTextTrainningLink"
+            android:layout_width="323dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:autofillHints=""
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="@string/link_da_execu_o_opcional"
+            android:minWidth="60dp"
+            android:minHeight="48dp"
+            android:paddingStart="10sp"
+            android:textColor="#ffffff"
+            android:textColorHint="#000000" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,8 +116,8 @@
                 android:id="@+id/createButton"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginTop="3sp"
                 android:layout_marginStart="3sp"
+                android:layout_marginTop="3sp"
                 android:background="@drawable/rounded_edit_text"
                 android:minWidth="110sp"
                 android:text="@string/finalizar_treino"
@@ -113,12 +128,12 @@
     </LinearLayout>
 
     <ListView
-        android:layout_width="415dp"
-        android:layout_height="282dp"
+        android:layout_width="410dp"
+        android:layout_height="263dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.908" />
 </androidx.constraintlayout.widget.ConstraintLayout>

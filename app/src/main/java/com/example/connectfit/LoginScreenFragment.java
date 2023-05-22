@@ -61,6 +61,7 @@ public class LoginScreenFragment extends Fragment {
             } else {
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener( authentication -> {
                     if(authentication.isSuccessful()){
+                        createAndShowSnackBar(view, "logado com sucesso!", "green");
                         Navigation.findNavController(view).navigate(R.id.homeFragment);
                     } else {
                         createAndShowSnackBar(view, "Email ou senha incorretos!", "red");

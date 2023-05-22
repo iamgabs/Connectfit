@@ -24,6 +24,7 @@
         android:layout_marginStart="86dp"
         android:layout_marginEnd="104dp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="@+id/imageButton5"
         tools:layout_editor_absoluteY="-51dp"
         tools:src="@drawable/connect_fit_main_img" />

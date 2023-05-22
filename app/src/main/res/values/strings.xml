@@ -21,4 +21,6 @@
     <string name="sou_aluno">Sou Aluno</string>
     <string name="sou_personal">Sou Personal</string>
     <string name="sou_nutricionista">Sou Nutricionista</string>
+    <string name="link_da_execu_o_opcional">link da execução (opcional)</string>
+    <string name="criar_treino">Criar treino</string>
 </resources>
