@@ -19,7 +19,9 @@ import androidx.navigation.Navigation;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentSigninScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
+import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.services.impl.UserServiceImpl;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -37,7 +39,7 @@ public class SigninScreenFragment extends Fragment {
     String userId;
     UserGroupEnum userGroup = UserGroupEnum.STUDENT;
     FragmentSigninScreenBinding binding;
-    UserConfigSingleton userConfigSingleton;
+    UserServiceImpl userService;
 
     private FirebaseAuth mAuth;
     public SigninScreenFragment() {super(R.layout.fragment_signin_screen);}
@@ -46,7 +48,7 @@ public class SigninScreenFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-
+        userService = new UserServiceImpl();
     }
 
     @Override
@@ -87,49 +89,25 @@ public class SigninScreenFragment extends Fragment {
                     public void onCheckedChanged(RadioGroup group, int checkedId) {
                         RadioButton button = (RadioButton) group.findViewById(checkedId);
                         String response = button.getText().toString().toLowerCase();
-                        System.out.println("User group:>>>>>>" + response);
-                        if(validResponseOfUserGroup(response)){
-                            System.out.println(">>>> passou na validação");
+                        if (validResponseOfUserGroup(response)) {
+                            UserEntity user = new UserEntity();
+                            user.setName(name);
+                            user.setEmail(email);
+                            user.setPassword(password);
+                            user.setUserGroupEnum(userGroup);
+
                             // deve tentar cadastrar usuário caso ainda não seja cadastrado!
-                            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(task.isSuccessful()){
-                                        FirebaseUser user = mAuth.getCurrentUser();
+                            try {
+                                userService.createNewUser(user);
+                                binding.signinUserName.setText("");
+                                binding.signinUserEmail.setText("");
+                                binding.signinUserPassword.setText("");
+                                createAndShowSnackBar(view, "usuário criado com sucesso!", "green");
+                                Navigation.findNavController(view).navigate(R.id.homeFragment);
+                            } catch (SigninErrorException signinErrorException) {
+                                createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
+                            }
 
-                                        // Criar um objeto Map para armazenar os dados extras
-                                        Map<String, Object> userData = new HashMap<>();
-                                        userData.put("id", user.getUid());
-                                        userData.put("name", name);
-                                        userData.put("group", userGroup);
-
-                                        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid());
-
-                                        userRef.set(userData, SetOptions.merge())
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if(task.isSuccessful()){
-                                                            UserEntity userSignin = new UserEntity(user.getUid(),
-                                                                                                    name,
-                                                                                                    email,
-                                                                                                    password,
-                                                                                                    userGroup);
-                                                            userConfigSingleton = UserConfigSingleton.getInstanceOfCurrentUser(userSignin);
-                                                            binding.signinUserName.setText("");
-                                                            binding.signinUserEmail.setText("");
-                                                            binding.signinUserPassword.setText("");
-                                                            createAndShowSnackBar(view, "Usuário criado com sucesso!", "green");
-                                                            Navigation.findNavController(view).navigate(R.id.homeFragment);
-                                                        }
-                                                    }
-                                                });
-                                    } else {
-                                        createAndShowSnackBar(view, "Não foi possível autenticar!", "red");
-                                    }
-
-                                }
-                            });
                         } else {
                             createAndShowSnackBar(view, "Você deve escolher um grupo de usuário!", "red");
                         }
@@ -139,8 +117,6 @@ public class SigninScreenFragment extends Fragment {
                 createAndShowSnackBar(view, "Por favor, verifique os campos", "red");
             }
         });
-
-
 
         // action to SigninScreenFragment
         View buttonChangeToLoginScreen = binding.changeScreenFromSigninToLogin;

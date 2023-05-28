@@ -15,16 +15,19 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.databinding.FragmentCreateTrainingBinding;
+import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class CreateTrainingFragment extends Fragment {
+public class CreateTrainingFragment extends Fragment implements TrainingAdapterListener {
 
 
     FragmentCreateTrainingBinding binding;
+    List<Trainning> trainningList;
+    TrainningAdapter adapter;
     public CreateTrainingFragment() {super(R.layout.fragment_create_training);}
 
     @Override
@@ -38,8 +41,10 @@ public class CreateTrainingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FragmentContainerView listView = binding.fragmentContainerViewTag;
-        List<Trainning> trainningList = new ArrayList<Trainning>();
+        ListView listView = binding.listview;
+        trainningList = new ArrayList<Trainning>();
+        adapter = new TrainningAdapter(getContext(), trainningList, this);
+        listView.setAdapter(adapter);
 
         // CREATE ONE TRAINING AND ADDING IT TO LIST
         View addButton = binding.addButton;
@@ -50,7 +55,8 @@ public class CreateTrainingFragment extends Fragment {
             String link = String.valueOf(binding.editTextTrainningLink.getText());
             try {
                 trainningList.add(createNewTraining(name, description, amount, link));
-                // TODO deve adicionar o nome dos treinos ao list view
+                // adicionar o nome dos treinos ao list view
+                adapter.notifyDataSetChanged();
             } catch (RuntimeException runtimeException) {
                 if(runtimeException.getMessage().equals("You must to specify the training!")) {
                     createAndShowSnackBar(view, runtimeException.getMessage(), "red");
@@ -59,12 +65,29 @@ public class CreateTrainingFragment extends Fragment {
         });
 
 
-        // PUSH TRAINNING
+        // PUSH TRAINING
         View createTrainning = binding.createButton;
         createTrainning.setOnClickListener(view1 -> {
+            // TODO deve cadastrar o treino (FIREBASE)
 
         });
 
+    }
+    @Override
+    public void editTraining(int position){
+        Trainning training = trainningList.get(position);
+
+        // set all text fields
+        binding.editTextTrainningName.setText(training.getTrainningName());
+        binding.editTextTrainningDescription.setText(training.getDescription());
+        binding.editTextTrainningAmount.setText(training.getTrainningAmount());
+        binding.editTextTrainningLink.setText(training.getLink());
+    }
+
+    @Override
+    public void deleteTraining(int position) {
+        trainningList.remove(position);
+        adapter.notifyDataSetChanged();
     }
 
     private Trainning createNewTraining(String name, String description, int amount, String link) throws RuntimeException{

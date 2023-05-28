@@ -1,6 +1,7 @@
 package com.example.connectfit;
 
 import static com.example.connectfit.Utils.createAndShowSnackBar;
+import static com.example.connectfit.Utils.isUserLogged;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -12,13 +13,18 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
+import com.example.connectfit.exceptions.SigninErrorException;
+import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.services.impl.UserServiceImpl;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -29,9 +35,16 @@ public class LoginScreenFragment extends Fragment {
     FragmentLoginScreenBinding binding;
     GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+    UserServiceImpl userService;
 
     public LoginScreenFragment() {
         super(R.layout.fragment_login_screen);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        userService = new UserServiceImpl();
     }
 
     @Override
@@ -59,27 +72,22 @@ public class LoginScreenFragment extends Fragment {
             if(email.isEmpty() || password.isEmpty()){
                 createAndShowSnackBar(view, "Por favor, preencha todos os campos!", "red");
             } else {
-                auth.signInWithEmailAndPassword(email, password).addOnCompleteListener( authentication -> {
-                    if(authentication.isSuccessful()){
-                        createAndShowSnackBar(view, "logado com sucesso!", "green");
-                        Navigation.findNavController(view).navigate(R.id.homeFragment);
-                    } else {
-                        createAndShowSnackBar(view, "Email ou senha incorretos!", "red");
+                try {
+                    userService.getUserByEmailAndPassword(email, password, getContext());
+                    if(UserConfigSingleton.getInstance().getInstanceOfCurrentUser() != null) {
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> não nulo");
+                        UserEntity userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("user_logged", (Parcelable) userLogged);
+                        getParentFragmentManager().setFragmentResult("userBundle", bundle);
                     }
-                });
+                    createAndShowSnackBar(view, "logado com sucesso!", "green");
+                    Navigation.findNavController(view).navigate(R.id.homeFragment);
+                } catch (SigninErrorException signinErrorException) {
+                    createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
+                }
             }
         });
-
-
-
-
-
-
-
-
-
-
-
 
         // action to SigninScreenFragment
         View buttonChangeToSigninScreen = binding.changeScreenFromLoginToSignin;

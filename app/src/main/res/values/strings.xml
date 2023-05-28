@@ -23,4 +23,9 @@
     <string name="sou_nutricionista">Sou Nutricionista</string>
     <string name="link_da_execu_o_opcional">link da execução (opcional)</string>
     <string name="criar_treino">Criar treino</string>
+    <string name="pencil">✏️</string>
+    <string name="cross">X</string>
+    <string name="search">digite para buscar</string>
+    <string name="adicionar_especialidades">Adicionar especialidades</string>
+    <string name="salvar">Salvar</string>
 </resources>

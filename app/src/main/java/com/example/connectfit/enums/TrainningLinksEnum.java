@@ -14,6 +14,7 @@ public enum TrainningLinksEnum {
 
     private String value;
 
+    TrainningLinksEnum() {}
     TrainningLinksEnum(String value) {
         this.value = value;
     }

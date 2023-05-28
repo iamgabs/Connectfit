@@ -41,7 +41,26 @@
         android:id="@+id/homeFragment"
         android:name="com.example.connectfit.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_loginScreenFragment"
+            app:destination="@id/loginScreenFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_createTrainingFragment"
+            app:destination="@id/createTrainingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_myTrainingFragment"
+            app:destination="@id/myTrainingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_myStudents"
+            app:destination="@id/myStudents" />
+    </fragment>
     <fragment
         android:id="@+id/createTrainingFragment"
         android:name="com.example.connectfit.CreateTrainingFragment"
@@ -53,18 +72,18 @@
         android:label="fragment_my_training"
         tools:layout="@layout/fragment_my_training" />
     <fragment
-        android:id="@+id/professionalProfileFragment"
-        android:name="com.example.connectfit.ProfessionalProfileFragment"
-        android:label="fragment_professional_profile"
-        tools:layout="@layout/fragment_professional_profile" />
-    <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.connectfit.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
     <fragment
-        android:id="@+id/studentProfileFragment"
-        android:name="com.example.connectfit.StudentProfileFragment"
-        android:label="fragment_student_profile"
-        tools:layout="@layout/fragment_student_profile" />
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.connectfit.UserProfileFragment"
+        android:label="fragment_user_profile"
+        tools:layout="@layout/fragment_user_profile" />
+    <fragment
+        android:id="@+id/myStudents"
+        android:name="com.example.connectfit.MyStudents"
+        android:label="fragment_my_students"
+        tools:layout="@layout/fragment_my_students" />
 </navigation>

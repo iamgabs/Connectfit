@@ -7,6 +7,7 @@ public class UserEntity {
     private String name;
     private String password;
     private String email;
+    private String specialization;
     private UserGroupEnum userGroupEnum;
 
     public UserEntity() {}
@@ -17,6 +18,7 @@ public class UserEntity {
         this.email = email;
         this.password = password;
         this.userGroupEnum = group;
+        this.specialization = "";
     }
 
     public String getId() {
@@ -57,5 +59,11 @@ public class UserEntity {
 
     public void setUserGroupEnum(UserGroupEnum userGroupEnum) {
         this.userGroupEnum = userGroupEnum;
+    }
+
+    public String getSpecialization() { return this.specialization; }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }

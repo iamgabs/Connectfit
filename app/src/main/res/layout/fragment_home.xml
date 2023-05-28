@@ -17,8 +17,9 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/fragment_header_component" />
 
-    <ImageButton
-        android:id="@+id/imageButton4"
+     <ImageButton
+        android:id="@+id/imageButtonMyTraining"
+        android:contentDescription="training"
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="30dp"
@@ -26,51 +27,54 @@
         android:layout_marginEnd="10dp"
         android:background="#8C52FF"
         android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonSearch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
-        tools:src="@drawable/mytrainning" />
+        android:src="@drawable/mytrainning" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/imageButtonSettings"
+        android:contentDescription="settings"
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="185dp"
-        android:layout_marginEnd="10dp"
         android:background="#8C52FF"
+        android:layout_marginEnd="10dp"
         android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonLogout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageButton4"
-        tools:src="@drawable/settings" />
+        app:layout_constraintTop_toTopOf="@+id/imageButtonMyTraining"
+        android:src="@drawable/settings" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/imageButtonLogout"
+        android:contentDescription="logout"
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="31dp"
         android:layout_marginTop="29dp"
         android:layout_marginEnd="37dp"
-        android:background="#8C52FF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton3"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
-        tools:src="@drawable/logout" />
+        android:background="#8C52FF"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonSettings"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonSearch"
+        android:src="@drawable/logout" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/imageButtonSearch"
+        android:contentDescription="search"
         android:layout_width="159dp"
         android:layout_height="157dp"
+        android:background="#8C52FF"
         android:layout_marginStart="31dp"
         android:layout_marginTop="113dp"
         android:layout_marginEnd="37dp"
-        android:background="#8C52FF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton4"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonMyTraining"
         app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
-        tools:src="@drawable/search" />
+        android:src="@drawable/search" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
