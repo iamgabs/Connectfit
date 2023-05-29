@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
 import com.example.connectfit.exceptions.SigninErrorException;
+import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.services.impl.UserServiceImpl;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,12 +31,15 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import org.w3c.dom.Text;
 
+import java.util.List;
+
 public class LoginScreenFragment extends Fragment {
 
     FragmentLoginScreenBinding binding;
     GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     UserServiceImpl userService;
+    UserEntity userLogged;
 
     public LoginScreenFragment() {
         super(R.layout.fragment_login_screen);
@@ -73,10 +77,19 @@ public class LoginScreenFragment extends Fragment {
                 createAndShowSnackBar(view, "Por favor, preencha todos os campos!", "red");
             } else {
                 try {
-                    userService.getUserByEmailAndPassword(email, password, getContext());
+                    userService.getUserByEmailAndPassword(email, password, getContext(), new UsersCallback() {
+                        @Override
+                        public void onUsersReceived(List<UserEntity> users) {
+                            userLogged = users.get(0);
+                            UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userLogged);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            createAndShowSnackBar(view, e.getMessage(), "red");
+                        }
+                    });
                     if(UserConfigSingleton.getInstance().getInstanceOfCurrentUser() != null) {
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> não nulo");
-                        UserEntity userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("user_logged", (Parcelable) userLogged);
                         getParentFragmentManager().setFragmentResult("userBundle", bundle);

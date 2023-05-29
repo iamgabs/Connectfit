@@ -13,6 +13,7 @@ import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.exceptions.TokenErrorException;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
+import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -82,7 +83,7 @@ public class UserRepository {
     }
 
 
-    public void getUser(String email, String password, Context context) throws SigninErrorException {
+    public void getUser(String email, String password, Context context, UsersCallback callback) throws SigninErrorException {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(authentication -> {
             if (authentication.isSuccessful()) {
                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -92,12 +93,16 @@ public class UserRepository {
                         DocumentSnapshot document = task.getResult();
                         String name = document.getString("name");
                         UserGroupEnum group = UserGroupEnum.valueOf(document.getString("group"));
-                        Utils.group = group;
                         UserEntity userEntity = new UserEntity(firebaseUser.getUid(), name, email, password, group);
-                        UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userEntity);
-                        new Handler().postDelayed(() -> generateToken(context), 1000);
+                        generateToken(context);
+
+                        List<UserEntity> list = new ArrayList<>();
+                        list.add(userEntity);
+
+                        callback.onUsersReceived(list);
+
                     } else {
-                        throw new SigninErrorException("Erro ao obter dados do usuário");
+                        callback.onFailure(task.getException());
                     }
                 });
             } else {
@@ -164,7 +169,6 @@ public class UserRepository {
 
                 callback.onProfessionalsReceived(listOfProfessionals);
             } else {
-                // Tratar o caso de erro na consulta
                 callback.onFailure(task.getException());
             }
         });

@@ -53,7 +53,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.robolectric:robolectric:4.6.1'
-    testImplementation 'org.mockito:mockito-core:4.11.0'
+    androidTestImplementation 'org.mockito:mockito-core:4.11.0'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
@@ -62,4 +62,6 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'junit:junit:4.12'
 }

@@ -123,14 +123,14 @@ public class SigninScreenFragment extends Fragment {
         buttonChangeToLoginScreen.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_signinScreenFragment_to_loginScreenFragment, null));
     }
 
-    private boolean areValidFields(String name, String email, String password) {
+    public boolean areValidFields(String name, String email, String password) {
         if(name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             return false;
         };
         return true;
     }
 
-    private boolean validResponseOfUserGroup(String response) {
+    public boolean validResponseOfUserGroup(String response) {
         if(!response.isEmpty()){
             if(response.equalsIgnoreCase("sou aluno")){
                 this.userGroup = UserGroupEnum.STUDENT;
