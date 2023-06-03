@@ -2,16 +2,15 @@ package com.example.connectfit.repositories;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
-import com.example.connectfit.Utils;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.exceptions.TokenErrorException;
+import com.example.connectfit.interfaces.CallbackSpecializations;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
@@ -28,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +62,10 @@ public class UserRepository {
                     userData.put("id", firebaseUser.getUid());
                     userData.put("name", user.getName());
                     userData.put("group", user.getUserGroupEnum());
+                    userData.put("specializations", "");
+                    List<String> subscribersEmptyList = new ArrayList<>();
+                    userData.put("subscribers", subscribersEmptyList);
+                    userData.put("notifications", 0);
 
                     DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.getUid());
 
@@ -82,7 +86,13 @@ public class UserRepository {
         });
     }
 
-
+    /** @method getUser should "return" an user from firebase
+     * @param email string of user email
+     * @param password string of user password
+     * @param context application context
+     * @param callback it's the callback of the method
+     * @throws SigninErrorException if there is no user in firebase
+    * */
     public void getUser(String email, String password, Context context, UsersCallback callback) throws SigninErrorException {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(authentication -> {
             if (authentication.isSuccessful()) {
@@ -93,7 +103,14 @@ public class UserRepository {
                         DocumentSnapshot document = task.getResult();
                         String name = document.getString("name");
                         UserGroupEnum group = UserGroupEnum.valueOf(document.getString("group"));
-                        UserEntity userEntity = new UserEntity(firebaseUser.getUid(), name, email, password, group);
+                        String specialization = document.getString("specializations");
+                        List<String> subscribers = (List<String>) document.get("subscribers");
+
+                        Long notificationsLong = document.getLong("notifications");
+                        int notifications = notificationsLong != null ? notificationsLong.intValue() : 0;
+
+                        UserEntity userEntity = new UserEntity(firebaseUser.getUid(), name, email, password, group, specialization);
+                        userEntity.setNotifications(notifications);
                         generateToken(context);
 
                         List<UserEntity> list = new ArrayList<>();
@@ -114,6 +131,10 @@ public class UserRepository {
     public UserEntity getUserById(String id){return null;}
 
     // método para perar token do usuário do firebase
+    /** @method generateToken should generate (get from firebase) a token
+     * and save it on SharedPreferences
+     * @param context is the application context
+     * */
     public void generateToken(Context context) throws TokenErrorException {
         Objects.requireNonNull(mAuth.getCurrentUser()).getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -132,11 +153,20 @@ public class UserRepository {
                 });
     }
 
+    /**
+     * @method getToken should getToken from SharedPreferences
+     * @param context is the application context
+     * @return the token
+     */
     public String getToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("ConnectFitToken", Context.MODE_PRIVATE);
         return sharedPreferences.getString("loginToken", null);
     }
 
+    /**
+     * @method signout should logout the user of application
+     * @param context is the application context
+     */
     public void signout(Context context) {
         // signout firebase
         mAuth.signOut();
@@ -151,9 +181,13 @@ public class UserRepository {
         UserConfigSingleton.getInstance().setInstanceOfCurrentUser(null);
     }
 
+    /**
+     * @method getAllProfessionals should get a list of all professionals
+     * @param callback is the callback of professionals references ProfessionalsCallback.class
+     */
     public void getAllProfessionals(ProfessionalsCallback callback) {
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
-        Query query = usersRef.whereIn("group", Arrays.asList("PERSONAL", "NUTRITIONIST"));
+        Query query = usersRef.whereIn("group", Arrays.asList("PERSONAL_TRAINER", "NUTRITIONIST"));
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -164,6 +198,7 @@ public class UserRepository {
                     user.setId(document.getId());
                     user.setName(document.getString("name"));
                     user.setEmail(document.getString("email"));
+                    user.setSpecialization(document.getString("specializations"));
                     listOfProfessionals.add(user);
                 }
 
@@ -174,8 +209,14 @@ public class UserRepository {
         });
     }
 
-    public void addSpecializations(List<String> specializations, UserEntity user) {
-        Map<String, Object> userData = new HashMap<>();
+    /**
+     * @method addSpecializations should UPDATE firebase "users.specializations"
+     * with a list of the old specializations + all specializations
+     * @param specializations
+     * @param user
+     */
+    public void addSpecializations(String specializations, UserEntity user) throws SearchErrorException{
+        Map<String, String> userData = new HashMap<>();
         userData.put("specializations", specializations);
 
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getId());
@@ -189,5 +230,45 @@ public class UserRepository {
                         }
                     }
                 });
+    }
+
+    public void getMySpecializations(String id, CallbackSpecializations callback) {
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(id);
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                String specializations = document.getString("specializations");
+                callback.onSpecializationReceived(specializations);
+            } else {
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+    public void subscribeWithAProfessional(UserEntity professional, UserEntity student) {
+        // TODO adicionar ao campo subscribers (Array) o id do aluno
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(professional.getId());
+
+        userRef.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if(document != null && document.exists()) {
+                    List<String> existingArray = (List<String>) document.get("subscribers");
+                    if (existingArray == null) {
+                        existingArray = new ArrayList<>();
+                    }
+                    existingArray.add(student.getId());
+                    userRef.update("subscribers", existingArray)
+                            .addOnSuccessListener(aVoid -> {
+                                userRef.update("notifications", 1);
+                            })
+                            .addOnFailureListener(e -> {
+                                throw new SearchErrorException("Não foi possível atualizar os dados!");
+                            });
+                }
+            } else {
+                throw new SearchErrorException("Não foi possível receber os dados!");
+            }
+        });
     }
 }

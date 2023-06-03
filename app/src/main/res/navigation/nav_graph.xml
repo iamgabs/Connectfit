@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_loginScreenFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginScreenFragment_to_studentHomeFragment"
+            app:destination="@id/studentHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragment_splash"
@@ -60,6 +63,9 @@
         <action
             android:id="@+id/action_homeFragment_to_myStudents"
             app:destination="@id/myStudents" />
+        <action
+            android:id="@+id/action_homeFragment_self"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/createTrainingFragment"
@@ -86,4 +92,25 @@
         android:name="com.example.connectfit.MyStudents"
         android:label="fragment_my_students"
         tools:layout="@layout/fragment_my_students" />
+    <fragment
+        android:id="@+id/studentHomeFragment"
+        android:name="com.example.connectfit.StudentHomeFragment"
+        android:label="fragment_student_home"
+        tools:layout="@layout/fragment_student_home" >
+        <action
+            android:id="@+id/action_studentHomeFragment_to_createTrainingFragment"
+            app:destination="@id/createTrainingFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_myTrainingFragment"
+            app:destination="@id/myTrainingFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_myStudents"
+            app:destination="@id/myStudents" />
+    </fragment>
 </navigation>

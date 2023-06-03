@@ -50,4 +50,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void getAllProfessionals(ProfessionalsCallback callback) { userRepository.getAllProfessionals(callback); }
+
+    @Override
+    public void addSpecializations(String specializations, UserEntity user) { userRepository.addSpecializations(specializations, user); }
+
+    @Override
+    public void doSubscribe(UserEntity user, UserEntity professional) { userRepository.subscribeWithAProfessional(professional, user); }
 }

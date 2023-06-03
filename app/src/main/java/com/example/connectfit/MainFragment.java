@@ -34,7 +34,7 @@ public class MainFragment extends Fragment {
     }
 
     /**
-     * @function onViewCreated should be responsible
+     * @method onViewCreated should be responsible
      * to start splash and call next screen
      * after 5000 milliseconds
      * */

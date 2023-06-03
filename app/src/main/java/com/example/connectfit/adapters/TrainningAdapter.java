@@ -1,4 +1,4 @@
-package com.example.connectfit;
+package com.example.connectfit.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.connectfit.R;
 import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
 

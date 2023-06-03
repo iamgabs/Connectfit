@@ -1,7 +1,5 @@
 package com.example.connectfit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,13 +12,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+
 public class UserRepositoryIntegrationTest {
 
     @Mock
@@ -40,13 +36,13 @@ public class UserRepositoryIntegrationTest {
 
     UserEntity user;
 
-    @Test(timeout = 2000)
+    @Test
     void saveSuccessfullyUserWithEmailAndPasswordWithNoExceptions() {
         user = new UserEntity();
         user.setName("username");
         user.setEmail("user@test.com");
         user.setPassword("password3");
-        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TREINER);
+        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TRAINER);
 
         when(mAuth.getCurrentUser()).thenReturn(mFirebaseUser);
         when(mFirebaseUser.getUid()).thenReturn("userUID");
@@ -56,20 +52,18 @@ public class UserRepositoryIntegrationTest {
         verify(mAuth).createUserWithEmailAndPassword(user.getEmail(), user.getPassword());
         verify(mAuthResultTask).isSuccessful();
 
-        try {
+        Assertions.assertThatCode(() -> {
             userRepository.saveUser(user);
-        } catch (SigninErrorException signinErrorException) {
-            fail(signinErrorException.getMessage());
-        }
+        }).doesNotThrowAnyException();
     }
 
-    @Test(expected = SigninErrorException.class, timeout = 2000)
+    @Test
     void saveUnsuccessfullyUserWithEmailAndPasswordWithException() {
         user = new UserEntity();
         user.setName("username");
         user.setEmail("user@test.com");
         user.setPassword("password3");
-        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TREINER);
+        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TRAINER);
 
         when(mAuth.getCurrentUser()).thenReturn(mFirebaseUser);
         when(mFirebaseUser.getUid()).thenReturn("userUID");
@@ -79,6 +73,8 @@ public class UserRepositoryIntegrationTest {
         verify(mAuth).createUserWithEmailAndPassword(user.getEmail(), user.getPassword());
         verify(mAuthResultTask).isSuccessful();
 
-        userRepository.saveUser(user);
+        org.junit.jupiter.api.Assertions.assertThrows(SigninErrorException.class, () -> {
+            userRepository.saveUser(user);
+        });
     }
 }

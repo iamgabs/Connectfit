@@ -6,6 +6,8 @@ plugins {
 android {
     namespace 'com.example.connectfit'
     compileSdk 33
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
 
     viewBinding {
         enabled = true
@@ -17,13 +19,12 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.ext.junit.runners.AndroidJUnit4"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+//            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -53,15 +54,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.robolectric:robolectric:4.6.1'
+//    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'org.mockito:mockito-core:4.11.0'
-
+    androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    androidTestImplementation("org.assertj:assertj-core:3.24.2")
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
 
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth'
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'junit:junit:4.12'
+
 }

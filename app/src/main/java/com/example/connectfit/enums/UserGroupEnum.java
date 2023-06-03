@@ -2,6 +2,6 @@ package com.example.connectfit.enums;
 
 public enum UserGroupEnum {
     STUDENT,
-    PERSONAL_TREINER,
+    PERSONAL_TRAINER,
     NUTRITIONIST;
 }

@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    tools:context=".StudentHomeFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view_tag"
@@ -19,20 +19,18 @@
 
     <ImageButton
         android:id="@+id/imageButtonMyTraining"
+        android:contentDescription="training"
         android:layout_width="159dp"
         android:layout_height="157dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="112dp"
-        android:layout_marginEnd="128dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="113dp"
+        android:layout_marginEnd="10dp"
         android:background="#8C52FF"
-        android:contentDescription="training"
         android:scaleType="fitCenter"
-        android:src="@drawable/mystudents"
-        app:layout_constraintBottom_toTopOf="@+id/imageButtonSettings"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonSearch"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
+        android:src="@drawable/mytrainning" />
 
     <ImageButton
         android:id="@+id/imageButtonSettings"
@@ -51,17 +49,32 @@
 
     <ImageButton
         android:id="@+id/imageButtonLogout"
+        android:contentDescription="logout"
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="31dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="29dp"
         android:layout_marginEnd="37dp"
-        android:background="#8C52FF"
-        android:contentDescription="logout"
         android:scaleType="fitCenter"
-        android:src="@drawable/logout"
         app:layout_constraintEnd_toEndOf="parent"
+        android:background="#8C52FF"
         app:layout_constraintStart_toEndOf="@+id/imageButtonSettings"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonMyTraining" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonSearch"
+        android:src="@drawable/logout" />
+
+    <ImageButton
+        android:id="@+id/imageButtonSearch"
+        android:contentDescription="search"
+        android:layout_width="159dp"
+        android:layout_height="157dp"
+        android:background="#8C52FF"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="113dp"
+        android:layout_marginEnd="37dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonMyTraining"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
+        android:src="@drawable/search" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

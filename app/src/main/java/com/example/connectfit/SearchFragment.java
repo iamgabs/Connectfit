@@ -1,6 +1,6 @@
 package com.example.connectfit;
 
-import static com.example.connectfit.Utils.createAndShowSnackBar;
+import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
 
 import android.os.Bundle;
 
@@ -13,10 +13,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.connectfit.adapters.UserAdapter;
 import com.example.connectfit.databinding.FragmentSearchBinding;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.models.entities.UserEntity;
@@ -52,13 +52,18 @@ public class SearchFragment extends Fragment {
 
         // get ALL users if user group is Personal or Nutritionist
         List<UserEntity> dataList = new ArrayList<UserEntity>();
+        UserAdapter adapter = new UserAdapter(getContext(), dataList);
+        results.setAdapter(adapter);
+
         userService.getAllProfessionals(new ProfessionalsCallback() {
             @Override
             public void onProfessionalsReceived(List<UserEntity> professionals) {
                 dataList.addAll(professionals);
-
-                UserAdapter adapter = new UserAdapter(getContext(), dataList);
-                results.setAdapter(adapter);
+                System.out.println("List:> ");
+                for(UserEntity user : dataList) {
+                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>"+user.getName());
+                }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -80,25 +85,25 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String searchText = editable.toString().toLowerCase();
-                List<UserEntity> filteredList = new ArrayList<>();
-                for (UserEntity item : dataList) {
-                    if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
-                        filteredList.add(item);
-                    }
-                }
-                if(filteredList.size() == 0){
-                    for (UserEntity item : dataList) {
-                        if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
-                            filteredList.add(item);
-                        }
-                    }
-                }
-
-                UserAdapter adapter = (UserAdapter) results.getAdapter();
-                adapter.clear();
-                adapter.addAll(filteredList);
-                adapter.notifyDataSetChanged();
+//                String searchText = editable.toString().toLowerCase();
+//                List<UserEntity> filteredList = new ArrayList<>();
+//                for (UserEntity item : dataList) {
+//                    if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
+//                        filteredList.add(item);
+//                    }
+//                }
+//                if(filteredList.size() == 0){
+//                    for (UserEntity item : dataList) {
+//                        if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
+//                            filteredList.add(item);
+//                        }
+//                    }
+//                }
+//
+//                UserAdapter adapter = (UserAdapter) results.getAdapter();
+//                adapter.clear();
+//                adapter.addAll(filteredList);
+//                adapter.notifyDataSetChanged();
             }
 
         });

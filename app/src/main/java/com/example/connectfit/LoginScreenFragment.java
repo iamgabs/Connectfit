@@ -1,35 +1,31 @@
 package com.example.connectfit;
 
-import static com.example.connectfit.Utils.createAndShowSnackBar;
-import static com.example.connectfit.Utils.isUserLogged;
+import static com.example.connectfit.utils.Utils.createAndShowNotificationWithVibration;
+import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
+import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.services.impl.UserServiceImpl;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -82,6 +78,9 @@ public class LoginScreenFragment extends Fragment {
                         public void onUsersReceived(List<UserEntity> users) {
                             userLogged = users.get(0);
                             UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userLogged);
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("user_logged", (Parcelable) userLogged);
+                            getParentFragmentManager().setFragmentResult("userBundle", bundle);
                         }
 
                         @Override
@@ -89,15 +88,26 @@ public class LoginScreenFragment extends Fragment {
                             createAndShowSnackBar(view, e.getMessage(), "red");
                         }
                     });
-                    if(UserConfigSingleton.getInstance().getInstanceOfCurrentUser() != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("user_logged", (Parcelable) userLogged);
-                        getParentFragmentManager().setFragmentResult("userBundle", bundle);
-                    }
                     createAndShowSnackBar(view, "logado com sucesso!", "green");
-                    Navigation.findNavController(view).navigate(R.id.homeFragment);
-                } catch (SigninErrorException signinErrorException) {
-                    createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
+                                if(userLogged.getNotifications() > 0) {
+                                    createAndShowNotificationWithVibration(getContext(), "Novo treino!", "Você tem um novo treino, confira sua lista de treinos!");
+                                }
+                                Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
+                            } else {
+                                if(userLogged.getNotifications() > 0) {
+                                    createAndShowNotificationWithVibration(getContext(), "Novo aluno(a)!", "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
+                                }
+                                Navigation.findNavController(view).navigate(R.id.homeFragment);
+                            }
+                        }
+                    }, 4000);
+
+                } catch (Exception exception) {
+                    createAndShowSnackBar(view, "não foi possível logar!", "red");
                 }
             }
         });

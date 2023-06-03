@@ -21,4 +21,7 @@ public interface UserService {
     public void signOut(Context context);
 
     public void getAllProfessionals(ProfessionalsCallback callback);
+
+    public void addSpecializations(String specializations, UserEntity user);
+    public void doSubscribe(UserEntity user, UserEntity professional);
 }

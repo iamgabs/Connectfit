@@ -9,6 +9,7 @@ public class SigninScreenFragmentUnitTest {
 
     private SigninScreenFragment signinScreenFragment;
 
+//    @BeforeEach
     @BeforeEach
     void setup() {
         signinScreenFragment = new SigninScreenFragment();

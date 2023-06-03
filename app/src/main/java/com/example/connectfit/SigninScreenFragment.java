@@ -1,10 +1,8 @@
 package com.example.connectfit;
 
-import static android.content.ContentValues.TAG;
-import static com.example.connectfit.Utils.createAndShowSnackBar;
+import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,24 +14,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentSigninScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.services.impl.UserServiceImpl;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class SigninScreenFragment extends Fragment {
     String userId;
@@ -76,43 +63,44 @@ public class SigninScreenFragment extends Fragment {
 
 
         // TODO pegar os dados do frontend e cadastrar user no firebase (auth padrão)
+        final RadioGroup radioGroup = binding.radioGroup;
+        final String[] response = {""};
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton button = (RadioButton) group.findViewById(checkedId);
+                response[0] = button.getText().toString().toLowerCase();
+            }
+        });
+
 
         View buttonSignin = binding.signinButton;
         buttonSignin.setOnClickListener(view1 -> {
             String name = String.valueOf(binding.signinUserName.getText());
             String email = String.valueOf(binding.signinUserEmail.getText());
             String password = String.valueOf(binding.signinUserPassword.getText());
-            final RadioGroup radioGroup = binding.radioGroup;
             if(areValidFields(name, email, password)) {
-                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        RadioButton button = (RadioButton) group.findViewById(checkedId);
-                        String response = button.getText().toString().toLowerCase();
-                        if (validResponseOfUserGroup(response)) {
-                            UserEntity user = new UserEntity();
-                            user.setName(name);
-                            user.setEmail(email);
-                            user.setPassword(password);
-                            user.setUserGroupEnum(userGroup);
+                    if (validResponseOfUserGroup(response[0])) {
+                        UserEntity user = new UserEntity();
+                        user.setName(name);
+                        user.setEmail(email);
+                        user.setPassword(password);
+                        user.setUserGroupEnum(userGroup);
 
-                            // deve tentar cadastrar usuário caso ainda não seja cadastrado!
-                            try {
-                                userService.createNewUser(user);
-                                binding.signinUserName.setText("");
-                                binding.signinUserEmail.setText("");
-                                binding.signinUserPassword.setText("");
-                                createAndShowSnackBar(view, "usuário criado com sucesso!", "green");
-                                Navigation.findNavController(view).navigate(R.id.homeFragment);
-                            } catch (SigninErrorException signinErrorException) {
-                                createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
-                            }
-
-                        } else {
-                            createAndShowSnackBar(view, "Você deve escolher um grupo de usuário!", "red");
+                        // deve tentar cadastrar usuário caso ainda não seja cadastrado!
+                        try {
+                            userService.createNewUser(user);
+                            binding.signinUserName.setText("");
+                            binding.signinUserEmail.setText("");
+                            binding.signinUserPassword.setText("");
+                            createAndShowSnackBar(view, "usuário criado com sucesso!", "green");
+                            Navigation.findNavController(view).navigate(R.id.homeFragment);
+                        } catch (SigninErrorException signinErrorException) {
+                            createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
                         }
+                    } else {
+                        createAndShowSnackBar(view, "Você deve escolher um grupo de usuário!", "red");
                     }
-                });
             } else {
                 createAndShowSnackBar(view, "Por favor, verifique os campos", "red");
             }
@@ -135,7 +123,7 @@ public class SigninScreenFragment extends Fragment {
             if(response.equalsIgnoreCase("sou aluno")){
                 this.userGroup = UserGroupEnum.STUDENT;
             } else if(response.equalsIgnoreCase("sou personal")) {
-                this.userGroup = UserGroupEnum.PERSONAL_TREINER;
+                this.userGroup = UserGroupEnum.PERSONAL_TRAINER;
             } else if(response.equalsIgnoreCase("sou nutricionista")) {
                 this.userGroup = UserGroupEnum.NUTRITIONIST;
             }

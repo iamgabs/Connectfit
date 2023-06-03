@@ -8,12 +8,19 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view_tag"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:name="com.example.connectfit.HeaderComponentFragment"
-        tools:layout="@layout/fragment_header_component"/>
+        android:layout_width="405dp"
+        android:layout_height="59dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="9dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_header_component" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="441dp"
         android:layout_height="336dp"
         android:gravity="center"

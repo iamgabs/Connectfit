@@ -1,19 +1,19 @@
 package com.example.connectfit;
 
-import static com.example.connectfit.Utils.createAndShowSnackBar;
+import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.connectfit.adapters.TrainningAdapter;
 import com.example.connectfit.databinding.FragmentCreateTrainingBinding;
 import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;

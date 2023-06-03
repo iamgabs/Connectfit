@@ -19,19 +19,20 @@ import android.widget.ImageButton;
 
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentHomeBinding;
+import com.example.connectfit.databinding.FragmentStudentHomeBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.services.impl.UserServiceImpl;
 
-public class HomeFragment extends Fragment{
+public class StudentHomeFragment extends Fragment{
 
-    FragmentHomeBinding binding;
+    FragmentStudentHomeBinding binding;
     UserServiceImpl userService;
     UserEntity currentUser;
     UserConfigSingleton userConfigSingleton;
     ImageButton trainningButton;
-    public HomeFragment(){
-        super(R.layout.fragment_home);
+    public StudentHomeFragment(){
+        super(R.layout.fragment_student_home);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class HomeFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentStudentHomeBinding.inflate(inflater, container, false);
 
         getParentFragmentManager().setFragmentResultListener("userBundle", this, new FragmentResultListener() {
             @Override
@@ -63,13 +64,18 @@ public class HomeFragment extends Fragment{
         userConfigSingleton = UserConfigSingleton.getInstance();
         currentUser = userConfigSingleton.getInstanceOfCurrentUser();
 
-        // check user group and switch images if its a professional
         trainningButton.setOnClickListener(l -> {
-            Navigation.findNavController(view).navigate(R.id.myStudents);
+            // navegar para a tela de treinos
+            Navigation.findNavController(view).navigate(R.id.myTrainingFragment);
+        });
+
+        binding.imageButtonSearch.setOnClickListener(l -> {
+            // navegar para a tela de busca
+            Navigation.findNavController(view).navigate(R.id.searchFragment);
         });
 
         binding.imageButtonSettings.setOnClickListener(l -> {
-           // navegar para a tela de configurações de usuário
+            // navegar para a tela de configurações de usuário
             Navigation.findNavController(view).navigate(R.id.userProfileFragment);
         });
 
