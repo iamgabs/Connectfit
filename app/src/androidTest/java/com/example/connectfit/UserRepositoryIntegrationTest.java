@@ -1,7 +1,16 @@
 package com.example.connectfit;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import androidx.test.espresso.assertion.ViewAssertions;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
@@ -11,70 +20,44 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.auth.User;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class UserRepositoryIntegrationTest {
 
-    @Mock
+    UserEntity user;
     UserRepository userRepository;
 
-    @Mock
-    private FirebaseAuth mAuth;
+    @Rule
+    public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
-    @Mock
-    private FirebaseUser mFirebaseUser;
-
-    @Mock
-    private Task<AuthResult> mAuthResultTask;
-
-    @Mock
-    private Task<Void> voidTask;
-
-    UserEntity user;
-
-    @Test
-    void saveSuccessfullyUserWithEmailAndPasswordWithNoExceptions() {
+    @Before
+    void setup() {
+        userRepository = new UserRepository();
         user = new UserEntity();
-        user.setName("username");
-        user.setEmail("user@test.com");
-        user.setPassword("password3");
-        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TRAINER);
-
-        when(mAuth.getCurrentUser()).thenReturn(mFirebaseUser);
-        when(mFirebaseUser.getUid()).thenReturn("userUID");
-        when(mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())).thenReturn(mAuthResultTask);
-        when(mAuthResultTask.isSuccessful()).thenReturn(true);
-
-        verify(mAuth).createUserWithEmailAndPassword(user.getEmail(), user.getPassword());
-        verify(mAuthResultTask).isSuccessful();
-
-        Assertions.assertThatCode(() -> {
-            userRepository.saveUser(user);
-        }).doesNotThrowAnyException();
+        user.setName("testName");
+        user.setEmail("usertest@test.com");
+        user.setPassword("userPassword");
+        user.setUserGroupEnum(UserGroupEnum.STUDENT);
     }
 
     @Test
-    void saveUnsuccessfullyUserWithEmailAndPasswordWithException() {
-        user = new UserEntity();
-        user.setName("username");
-        user.setEmail("user@test.com");
-        user.setPassword("password3");
-        user.setUserGroupEnum(UserGroupEnum.PERSONAL_TRAINER);
-
-        when(mAuth.getCurrentUser()).thenReturn(mFirebaseUser);
-        when(mFirebaseUser.getUid()).thenReturn("userUID");
-        when(mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())).thenReturn(mAuthResultTask);
-        when(mAuthResultTask.isSuccessful()).thenReturn(false);
-
-        verify(mAuth).createUserWithEmailAndPassword(user.getEmail(), user.getPassword());
-        verify(mAuthResultTask).isSuccessful();
-
-        org.junit.jupiter.api.Assertions.assertThrows(SigninErrorException.class, () -> {
+    void saveSuccessfullyUserWithEmailAndPasswordWithNoExceptions() {
+        try {
             userRepository.saveUser(user);
-        });
+        } catch (SigninErrorException signinErrorException) {
+            fail();
+        }
+
+        onView(withText("usuário criado com sucesso!"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 }

@@ -37,30 +37,15 @@ public class Utils {
         } else if(color.equalsIgnoreCase("green")){
             snackbar.setTextColor(view.getResources().getColor(R.color.black));
             snackbar.setBackgroundTint(view.getResources().getColor(R.color.LIGHT_GREEN));
+        } else if(color.equalsIgnoreCase("blue")) {
+            snackbar.setBackgroundTint(view.getResources().getColor(R.color.LIGHT_BLUE));
         }
         snackbar.show();
     }
 
 
-    public static void createAndShowNotificationWithVibration(Context context, String title, String message){
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        // create notification
-        Notification.Builder notificationBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.connect_fit_main_img)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
-
-        // get notification manager
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // show notification
-        notificationManager.notify(1, notificationBuilder.build());
-
+    public static void createAndShowNotificationWithVibration(Context context, View view, String message){
+        createAndShowSnackBar(view, message, "blue");
         // start vibration
         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (vibrator != null) {

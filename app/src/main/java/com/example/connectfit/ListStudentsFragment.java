@@ -9,15 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class LoginMiddleFragment extends Fragment {
-    public LoginMiddleFragment() {
-        super(R.layout.fragment_login_middle);
+public class ListStudentsFragment extends Fragment {
+    public ListStudentsFragment() {
+        super(R.layout.fragment_list_students);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login_middle, container, false);
+        return inflater.inflate(R.layout.fragment_list_students, container, false);
     }
 }

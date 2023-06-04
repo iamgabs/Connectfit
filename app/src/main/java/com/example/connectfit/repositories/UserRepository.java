@@ -245,6 +245,10 @@ public class UserRepository {
         });
     }
 
+    /** @method subscribeWithAProfessional should subscribe a student to a professional
+     * @param professional is the professional which 'student' will subscribe
+     * @param student is the student that will subscribe in
+     * */
     public void subscribeWithAProfessional(UserEntity professional, UserEntity student) {
         // TODO adicionar ao campo subscribers (Array) o id do aluno
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(professional.getId());
@@ -268,6 +272,20 @@ public class UserRepository {
                 }
             } else {
                 throw new SearchErrorException("Não foi possível receber os dados!");
+            }
+        });
+    }
+
+    /***
+     * @method clearNotifications should clear all notifications for 'user'
+     * @param user is the user that will get your notifications to 0
+     */
+    public void clearNotifications(UserEntity user) {
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getId());
+
+        userRef.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                userRef.update("notifications", 0);
             }
         });
     }

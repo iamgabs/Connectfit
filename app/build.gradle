@@ -52,6 +52,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'androidx.test.ext:junit:1.1.5'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.robolectric:robolectric:4.6.1'
 //    testImplementation 'junit:junit:4.12'
@@ -59,6 +60,11 @@ dependencies {
     androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     androidTestImplementation("org.assertj:assertj-core:3.24.2")
     // Import the BoM for the Firebase platform
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
 
     // Add the dependency for the Firebase Authentication library

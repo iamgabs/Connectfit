@@ -94,12 +94,12 @@ public class LoginScreenFragment extends Fragment {
                         public void run() {
                             if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
                                 if(userLogged.getNotifications() > 0) {
-                                    createAndShowNotificationWithVibration(getContext(), "Novo treino!", "Você tem um novo treino, confira sua lista de treinos!");
+                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
                                 }
                                 Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
                             } else {
                                 if(userLogged.getNotifications() > 0) {
-                                    createAndShowNotificationWithVibration(getContext(), "Novo aluno(a)!", "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
+                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
                                 }
                                 Navigation.findNavController(view).navigate(R.id.homeFragment);
                             }
