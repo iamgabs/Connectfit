@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.connectfit.adapters.UserAdapter;
+import com.example.connectfit.adapters.ProfessionalAdapter;
 import com.example.connectfit.databinding.FragmentSearchBinding;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.models.entities.UserEntity;
@@ -52,23 +52,19 @@ public class SearchFragment extends Fragment {
 
         // get ALL users if user group is Personal or Nutritionist
         List<UserEntity> dataList = new ArrayList<UserEntity>();
-        UserAdapter adapter = new UserAdapter(getContext(), dataList);
+        ProfessionalAdapter adapter = new ProfessionalAdapter(getContext(), dataList);
         results.setAdapter(adapter);
 
         userService.getAllProfessionals(new ProfessionalsCallback() {
             @Override
             public void onProfessionalsReceived(List<UserEntity> professionals) {
                 dataList.addAll(professionals);
-                System.out.println("List:> ");
-                for(UserEntity user : dataList) {
-                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>"+user.getName());
-                }
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(Exception e) {
-                // Trate o caso de falha na obtenção dos profissionais
+                createAndShowSnackBar(view, "não foi possível obter os profissionais!", "red");
             }
         });
 

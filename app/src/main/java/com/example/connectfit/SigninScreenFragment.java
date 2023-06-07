@@ -18,15 +18,18 @@ import com.example.connectfit.databinding.FragmentSigninScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import javax.inject.Inject;
 
 public class SigninScreenFragment extends Fragment {
     String userId;
     UserGroupEnum userGroup = UserGroupEnum.STUDENT;
     FragmentSigninScreenBinding binding;
-    UserServiceImpl userService;
+    @Inject
+    UserRepository userRepository;
 
     private FirebaseAuth mAuth;
     public SigninScreenFragment() {super(R.layout.fragment_signin_screen);}
@@ -35,7 +38,6 @@ public class SigninScreenFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        userService = new UserServiceImpl();
     }
 
     @Override
@@ -89,7 +91,7 @@ public class SigninScreenFragment extends Fragment {
 
                         // deve tentar cadastrar usuário caso ainda não seja cadastrado!
                         try {
-                            userService.createNewUser(user);
+                            userRepository.saveUser(user);
                             binding.signinUserName.setText("");
                             binding.signinUserEmail.setText("");
                             binding.signinUserPassword.setText("");

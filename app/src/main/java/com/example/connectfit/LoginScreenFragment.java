@@ -23,18 +23,21 @@ import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class LoginScreenFragment extends Fragment {
 
     FragmentLoginScreenBinding binding;
     GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    UserServiceImpl userService;
+    @Inject
+    UserRepository userRepository;
     UserEntity userLogged;
 
     public LoginScreenFragment() {
@@ -44,7 +47,6 @@ public class LoginScreenFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userService = new UserServiceImpl();
     }
 
     @Override
@@ -55,6 +57,8 @@ public class LoginScreenFragment extends Fragment {
 
 
     /**
+     * @method onViewCreated is responsible to call an instance of userservice which
+     * call firebase to login application
      @variable buttonChangeToSigninScreen has an action to go to SigninScreenFragment
       * */
     @Override
@@ -64,16 +68,20 @@ public class LoginScreenFragment extends Fragment {
         TextView txtGoogleButton = (TextView) binding.loginGoogle.getChildAt(0);
         txtGoogleButton.setText(R.string.login_gogle);
 
+        /***
+         * @variable buttonLogin gets the click in login button
+         */
+
         View buttonLogin = binding.loginButton;
         buttonLogin.setOnClickListener(view1 -> {
-            // TODO pegar os dados do frontend e cadastrar no firebase (auth padrão)
+            // get data from frontend and sign-in with firebase (email/password auth)
             String email = String.valueOf(binding.email.getText());
             String password = String.valueOf(binding.password.getText());
             if(email.isEmpty() || password.isEmpty()){
                 createAndShowSnackBar(view, "Por favor, preencha todos os campos!", "red");
             } else {
                 try {
-                    userService.getUserByEmailAndPassword(email, password, getContext(), new UsersCallback() {
+                    userRepository.getUser(email, password, getContext(), new UsersCallback() {
                         @Override
                         public void onUsersReceived(List<UserEntity> users) {
                             userLogged = users.get(0);
@@ -95,11 +103,15 @@ public class LoginScreenFragment extends Fragment {
                             if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
                                 if(userLogged.getNotifications() > 0) {
                                     createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
+                                    // clearNotifications
+                                    userRepository.clearNotifications(userLogged);
                                 }
                                 Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
                             } else {
                                 if(userLogged.getNotifications() > 0) {
                                     createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
+                                    // clearNotifications
+                                    userRepository.clearNotifications(userLogged);
                                 }
                                 Navigation.findNavController(view).navigate(R.id.homeFragment);
                             }

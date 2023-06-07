@@ -22,12 +22,14 @@ import com.example.connectfit.databinding.FragmentHomeBinding;
 import com.example.connectfit.databinding.FragmentStudentHomeBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
+import javax.inject.Inject;
 
 public class StudentHomeFragment extends Fragment{
 
     FragmentStudentHomeBinding binding;
-    UserServiceImpl userService;
+    @Inject
+    UserRepository userRepository;
     UserEntity currentUser;
     UserConfigSingleton userConfigSingleton;
     ImageButton trainningButton;
@@ -38,8 +40,6 @@ public class StudentHomeFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userService = new UserServiceImpl();
-
     }
 
     @Nullable
@@ -81,7 +81,7 @@ public class StudentHomeFragment extends Fragment{
 
         binding.imageButtonLogout.setOnClickListener(l -> {
             // end user session
-            userService.signOut(getContext());
+            userRepository.signout(getContext());
             // show snackbar
             createAndShowSnackBar(view, "sessão encerrada, até mais!", "green");
             // navigate to login screen

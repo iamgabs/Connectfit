@@ -12,6 +12,7 @@ import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.exceptions.TokenErrorException;
 import com.example.connectfit.interfaces.CallbackSpecializations;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
+import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,15 +42,16 @@ public class UserRepository {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFirestore;
 
-    public UserRepository(){
+    public UserRepository() {
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
     }
 
-    /** @method saveUser should create a new user in firebase with email and password
-     *  @param user is an user with email and password only
-     * */
-    public void saveUser(UserEntity user) throws SigninErrorException{
+    /**
+     * @param user is an user with email and password only
+     * @method saveUser should create a new user in firebase with email and password
+     */
+    public void saveUser(UserEntity user) throws SigninErrorException {
         // calls firebase function 'createUserWithEmailAndPassword'
         mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -86,13 +88,14 @@ public class UserRepository {
         });
     }
 
-    /** @method getUser should "return" an user from firebase
-     * @param email string of user email
+    /**
+     * @param email    string of user email
      * @param password string of user password
-     * @param context application context
+     * @param context  application context
      * @param callback it's the callback of the method
      * @throws SigninErrorException if there is no user in firebase
-    * */
+     * @method getUser should "return" an user from firebase
+     */
     public void getUser(String email, String password, Context context, UsersCallback callback) throws SigninErrorException {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(authentication -> {
             if (authentication.isSuccessful()) {
@@ -128,13 +131,17 @@ public class UserRepository {
         });
     }
 
-    public UserEntity getUserById(String id){return null;}
+    public UserEntity getUserById(String id) {
+        return null;
+    }
 
     // método para perar token do usuário do firebase
-    /** @method generateToken should generate (get from firebase) a token
-     * and save it on SharedPreferences
+
+    /**
      * @param context is the application context
-     * */
+     * @method generateToken should generate (get from firebase) a token
+     * and save it on SharedPreferences
+     */
     public void generateToken(Context context) throws TokenErrorException {
         Objects.requireNonNull(mAuth.getCurrentUser()).getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -154,9 +161,9 @@ public class UserRepository {
     }
 
     /**
-     * @method getToken should getToken from SharedPreferences
      * @param context is the application context
      * @return the token
+     * @method getToken should getToken from SharedPreferences
      */
     public String getToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("ConnectFitToken", Context.MODE_PRIVATE);
@@ -164,8 +171,8 @@ public class UserRepository {
     }
 
     /**
-     * @method signout should logout the user of application
      * @param context is the application context
+     * @method signout should logout the user of application
      */
     public void signout(Context context) {
         // signout firebase
@@ -182,8 +189,8 @@ public class UserRepository {
     }
 
     /**
-     * @method getAllProfessionals should get a list of all professionals
      * @param callback is the callback of professionals references ProfessionalsCallback.class
+     * @method getAllProfessionals should get a list of all professionals
      */
     public void getAllProfessionals(ProfessionalsCallback callback) {
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
@@ -210,12 +217,12 @@ public class UserRepository {
     }
 
     /**
-     * @method addSpecializations should UPDATE firebase "users.specializations"
-     * with a list of the old specializations + all specializations
      * @param specializations
      * @param user
+     * @method addSpecializations should UPDATE firebase "users.specializations"
+     * with a list of the old specializations + all specializations
      */
-    public void addSpecializations(String specializations, UserEntity user) throws SearchErrorException{
+    public void addSpecializations(String specializations, UserEntity user) throws SearchErrorException {
         Map<String, String> userData = new HashMap<>();
         userData.put("specializations", specializations);
 
@@ -245,18 +252,19 @@ public class UserRepository {
         });
     }
 
-    /** @method subscribeWithAProfessional should subscribe a student to a professional
+    /**
      * @param professional is the professional which 'student' will subscribe
-     * @param student is the student that will subscribe in
-     * */
+     * @param student      is the student that will subscribe in
+     * @method subscribeWithAProfessional should subscribe a student to a professional
+     */
     public void subscribeWithAProfessional(UserEntity professional, UserEntity student) {
         // TODO adicionar ao campo subscribers (Array) o id do aluno
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(professional.getId());
 
         userRef.get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
+            if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
-                if(document != null && document.exists()) {
+                if (document != null && document.exists()) {
                     List<String> existingArray = (List<String>) document.get("subscribers");
                     if (existingArray == null) {
                         existingArray = new ArrayList<>();
@@ -284,9 +292,53 @@ public class UserRepository {
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getId());
 
         userRef.get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 userRef.update("notifications", 0);
             }
         });
     }
+
+
+    /***
+     * @method getMyStudents should get all subscribers for user "n"
+     * if this user has subscribers
+     * @param user is the professional which the method will filtering
+     * @param callback is the callback interface
+     */
+    public void getMyStudents(UserEntity user, StudentsCallback callback) {
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getId());
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    List<UserEntity> studentsArray = new ArrayList<>();
+                    List<String> existingArrayOfStudentsId = (List<String>) document.get("subscribers");
+                    if (existingArrayOfStudentsId != null) {
+                        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
+
+                        usersCollection.get().addOnCompleteListener(usersTask -> {
+                            if (usersTask.isSuccessful()) {
+                                for (QueryDocumentSnapshot userDoc : usersTask.getResult()) {
+                                    if (existingArrayOfStudentsId.contains(userDoc.getId())) {
+                                        UserEntity student = userDoc.toObject(UserEntity.class);
+                                        studentsArray.add(student);
+                                    }
+                                }
+                                callback.onStudentsReceived(studentsArray);
+                            } else {
+                                callback.onFailure(usersTask.getException());
+                            }
+                        });
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                } else {
+                    callback.onFailure(task.getException());
+                }
+            }
+        });
+    }
+
+
 }

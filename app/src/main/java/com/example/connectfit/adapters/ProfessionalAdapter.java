@@ -19,11 +19,11 @@ import com.example.connectfit.services.impl.UserServiceImpl;
 
 import java.util.List;
 
-public class UserAdapter extends ArrayAdapter<UserEntity> {
+public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
     private LayoutInflater inflater;
     private UserServiceImpl userService;
 
-    public UserAdapter(Context context, List<UserEntity> users) {
+    public ProfessionalAdapter(Context context, List<UserEntity> users) {
         super(context, 0, users);
         inflater = LayoutInflater.from(context);
     }

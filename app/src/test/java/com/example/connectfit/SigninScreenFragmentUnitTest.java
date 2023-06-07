@@ -17,49 +17,49 @@ public class SigninScreenFragmentUnitTest {
 
     @Test
     @DisplayName("ChecksIfAreValidFieldsEvaluatesToTrueWhenReceiveAllFields")
-    void areValidFields_evaluatesToTrue() {
+    void givenThreeFields_whenCheckingIfAreValidFields_thenEvaluatesToTrue() {
         boolean result = signinScreenFragment.areValidFields("test", "test@email.com", "test");
         Assertions.assertTrue(result);
     }
 
     @Test
     @DisplayName("ChecksIfAreValidFieldsEvaluatesToFalseWhenReceiveOnlyName")
-    void areValidFields_evaluatesToFalseWhenReceiveNameOnly() {
+    void givenThreeFields_whenCheckingIfAreValidFields_thenEvaluatesToFalseReceivingNameOnly() {
         boolean result = signinScreenFragment.areValidFields("test", "", "");
         Assertions.assertFalse(result);
     }
 
     @Test
     @DisplayName("ChecksIfAreValidFieldsEvaluatesToFalseWhenReceiveOnlyEmail")
-    void areValidFields_evaluatesToFalseWhenReceiveEmailOnly() {
+    void givenThreeFields_whenCheckingIfAreValidFields_thenEvaluatesToFalseReceivingEmailOnly() {
         boolean result = signinScreenFragment.areValidFields("", "email@test.com", "");
         Assertions.assertFalse(result);
     }
 
     @Test
     @DisplayName("ChecksIfAreValidFieldsEvaluatesToFalseWhenReceiveOnlyPassword")
-    void areValidFields_evaluatesToFalseWhenReceivePasswordOnly() {
+    void givenThreeFields_whenCheckingIfAreValidFields_thenEvaluatesToFalseWhenReceivePasswordOnly() {
         boolean result = signinScreenFragment.areValidFields("", "", "testpass");
         Assertions.assertFalse(result);
     }
 
     @Test
     @DisplayName("ChecksIfAreValidFieldsEvaluatesToFalseWhenDoesn'tReceiveAnyValues")
-    void areValidFields_evaluatesToFalseWhenDoesntReceiveValues() {
+    void givenThreeNullFields_whenCheckingIfAreValidFields_thenEvaluatesToFalseDoesntReceiveValues() {
         boolean result = signinScreenFragment.areValidFields("", "", "");
         Assertions.assertFalse(result);
     }
 
     @Test
     @DisplayName("ChecksIf'sAValidResponseOfUserGroupIfGroupIsSouAluno")
-    void validResponseOfUserGroup_evaluatesToTrueIfResponseIsSouAluno() {
+    void givenValidResponseOfUserGroup_whenCheckingUserGroup_thenEvaluatesToTrueIfResponseIsSouAluno() {
         Assertions.assertTrue(signinScreenFragment.validResponseOfUserGroup("sou aluno"));
     }
 
 
     @Test
     @DisplayName("ChecksIf'sAValidResponseOfUserGroupIfGroupIsEmpty")
-    void validResponseOfUserGroup_evaluatesToFalseIfResponseIsEmpty() {
+    void givenValidResponseOfUserGroup_whenCheckingUserGroup_thenEvaluatesToFalseIfResponseIsEmpty() {
         Assertions.assertFalse(signinScreenFragment.validResponseOfUserGroup(""));
     }
 

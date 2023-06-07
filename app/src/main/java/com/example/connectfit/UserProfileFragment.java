@@ -16,20 +16,22 @@ import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentUserProfileBinding;
 import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
+
+import javax.inject.Inject;
 
 public class UserProfileFragment extends Fragment {
 
     FragmentUserProfileBinding binding;
     UserEntity user;
-    UserServiceImpl userService;
+    @Inject
+    UserRepository userRepository;
 
     public UserProfileFragment() { super(R.layout.fragment_user_profile); }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userService = new UserServiceImpl();
         user = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
     }
 
@@ -64,7 +66,7 @@ public class UserProfileFragment extends Fragment {
             editTextStringResource = editTextStringResource.replace(" ", ",");
             if(!editTextStringResource.isEmpty()) {
                 try {
-                    userService.addSpecializations(editTextStringResource, user);
+                    userRepository.addSpecializations(editTextStringResource, user);
                     binding.editTextSpecializations.setText("");
                     createAndShowSnackBar(view, "adicionado com sucesso!","green");
                     binding.textView.setText(editTextStringResource);

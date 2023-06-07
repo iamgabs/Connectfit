@@ -4,6 +4,10 @@ plugins {
 }
 
 android {
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
+
     namespace 'com.example.connectfit'
     compileSdk 33
     aaptOptions.cruncherEnabled = false
@@ -19,7 +23,8 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.ext.junit.runners.AndroidJUnit4"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -59,12 +64,16 @@ dependencies {
     androidTestImplementation 'org.mockito:mockito-core:4.11.0'
     androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     androidTestImplementation("org.assertj:assertj-core:3.24.2")
-    // Import the BoM for the Firebase platform
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+    implementation 'com.google.dagger:dagger-android:2.20'
+    implementation 'com.google.dagger:dagger-android-support:2.20' // if you use the support libraries
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.20'
+
+    // Import the BoM for the Firebase platfor
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
 
     // Add the dependency for the Firebase Authentication library
