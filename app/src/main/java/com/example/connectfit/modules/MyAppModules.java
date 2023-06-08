@@ -7,11 +7,12 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
+
 @Module
 public class MyAppModules {
     @Provides
     @Singleton
-    UserRepository providesUserRepository(){
+    public UserRepository provideUserRepository() {
         return new UserRepository();
     }
 }

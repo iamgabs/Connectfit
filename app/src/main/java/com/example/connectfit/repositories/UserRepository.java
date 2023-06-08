@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.enums.UserGroupEnum;
@@ -15,6 +17,7 @@ import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.results.GetUserResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -37,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 public class UserRepository {
 
     private FirebaseAuth mAuth;
@@ -45,6 +50,7 @@ public class UserRepository {
     public UserRepository() {
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
+        System.out.println("entrou no repository >>>>>>>>>>>>>>>>");
     }
 
     /**
@@ -92,11 +98,13 @@ public class UserRepository {
      * @param email    string of user email
      * @param password string of user password
      * @param context  application context
-     * @param callback it's the callback of the method
+     * @param context it's the fragment context
      * @throws SigninErrorException if there is no user in firebase
      * @method getUser should "return" an user from firebase
      */
-    public void getUser(String email, String password, Context context, UsersCallback callback) throws SigninErrorException {
+    public LiveData<GetUserResult> getUser(String email, String password, Context context) {
+        MutableLiveData<GetUserResult> loginResultLiveData = new MutableLiveData<>();
+
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(authentication -> {
             if (authentication.isSuccessful()) {
                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -116,20 +124,22 @@ public class UserRepository {
                         userEntity.setNotifications(notifications);
                         generateToken(context);
 
-                        List<UserEntity> list = new ArrayList<>();
-                        list.add(userEntity);
+                        List<UserEntity> userList = new ArrayList<>();
+                        userList.add(userEntity);
 
-                        callback.onUsersReceived(list);
-
+                        loginResultLiveData.setValue(new GetUserResult(userList));
                     } else {
-                        callback.onFailure(task.getException());
+                        loginResultLiveData.setValue(new GetUserResult(task.getException()));
                     }
                 });
             } else {
-                throw new StringIndexOutOfBoundsException("Erro ao logar!");
+                loginResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao logar!")));
             }
         });
+
+        return loginResultLiveData;
     }
+
 
     public UserEntity getUserById(String id) {
         return null;
@@ -189,16 +199,18 @@ public class UserRepository {
     }
 
     /**
-     * @param callback is the callback of professionals references ProfessionalsCallback.class
      * @method getAllProfessionals should get a list of all professionals
      */
-    public void getAllProfessionals(ProfessionalsCallback callback) {
+
+    public LiveData<List<UserEntity>> getAllProfessionals() {
+        MutableLiveData<List<UserEntity>> professionalsLiveData = new MutableLiveData<>();
+
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
         Query query = usersRef.whereIn("group", Arrays.asList("PERSONAL_TRAINER", "NUTRITIONIST"));
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                List<UserEntity> listOfProfessionals = new ArrayList<UserEntity>();
+                List<UserEntity> listOfProfessionals = new ArrayList<>();
 
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     UserEntity user = new UserEntity();
@@ -209,12 +221,15 @@ public class UserRepository {
                     listOfProfessionals.add(user);
                 }
 
-                callback.onProfessionalsReceived(listOfProfessionals);
+                professionalsLiveData.setValue(listOfProfessionals);
             } else {
-                callback.onFailure(task.getException());
+                professionalsLiveData.setValue(null);
             }
         });
+
+        return professionalsLiveData;
     }
+
 
     /**
      * @param specializations
@@ -239,19 +254,22 @@ public class UserRepository {
                 });
     }
 
-    public void getMySpecializations(String id, CallbackSpecializations callback) {
+    public LiveData<String> getMySpecializations(String id) {
+        MutableLiveData<String> specializationsLiveData = new MutableLiveData<>();
+
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(id);
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 String specializations = document.getString("specializations");
-                callback.onSpecializationReceived(specializations);
+                specializationsLiveData.setValue(specializations);
             } else {
-                callback.onFailure(task.getException());
+                specializationsLiveData.setValue(null);
             }
         });
-    }
 
+        return specializationsLiveData;
+    }
     /**
      * @param professional is the professional which 'student' will subscribe
      * @param student      is the student that will subscribe in
@@ -303,9 +321,10 @@ public class UserRepository {
      * @method getMyStudents should get all subscribers for user "n"
      * if this user has subscribers
      * @param user is the professional which the method will filtering
-     * @param callback is the callback interface
      */
-    public void getMyStudents(UserEntity user, StudentsCallback callback) {
+    public LiveData<List<UserEntity>> getMyStudents(UserEntity user) {
+        MutableLiveData<List<UserEntity>> studentsLiveData = new MutableLiveData<>();
+
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(user.getId());
 
         userRef.get().addOnCompleteListener(task -> {
@@ -316,7 +335,6 @@ public class UserRepository {
                     List<String> existingArrayOfStudentsId = (List<String>) document.get("subscribers");
                     if (existingArrayOfStudentsId != null) {
                         CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
-
                         usersCollection.get().addOnCompleteListener(usersTask -> {
                             if (usersTask.isSuccessful()) {
                                 for (QueryDocumentSnapshot userDoc : usersTask.getResult()) {
@@ -325,20 +343,25 @@ public class UserRepository {
                                         studentsArray.add(student);
                                     }
                                 }
-                                callback.onStudentsReceived(studentsArray);
+                                studentsLiveData.setValue(studentsArray);
                             } else {
-                                callback.onFailure(usersTask.getException());
+                                studentsLiveData.setValue(null);
                             }
                         });
                     } else {
-                        callback.onFailure(task.getException());
+                        studentsLiveData.setValue(null);
                     }
                 } else {
-                    callback.onFailure(task.getException());
+                    studentsLiveData.setValue(null);
                 }
+            } else {
+                studentsLiveData.setValue(null);
             }
         });
+
+        return studentsLiveData;
     }
+
 
 
 }

@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentHomeBinding;
 import com.example.connectfit.enums.UserGroupEnum;
+import com.example.connectfit.interfaces.MyAppComponent;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 
@@ -28,7 +29,6 @@ import javax.inject.Inject;
 public class HomeFragment extends Fragment{
 
     FragmentHomeBinding binding;
-    @Inject
     UserRepository userRepository;
     UserEntity currentUser;
     UserConfigSingleton userConfigSingleton;
@@ -40,6 +40,7 @@ public class HomeFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userRepository = new UserRepository();
     }
 
     @Nullable

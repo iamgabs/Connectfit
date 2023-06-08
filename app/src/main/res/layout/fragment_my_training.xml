@@ -22,16 +22,6 @@
         tools:layout_editor_absoluteX="84dp"
         tools:layout_editor_absoluteY="-62dp" />
 
-    <ImageButton
-        android:id="@+id/imageView7"
-        android:layout_width="67dp"
-        android:layout_height="72dp"
-        android:src="@drawable/back"
-        android:background="#8C52FF"
-        android:scaleType="fitCenter"
-        tools:layout_editor_absoluteX="17dp"
-        tools:layout_editor_absoluteY="7dp" />
-
     <ListView
         android:layout_width="412dp"
         android:layout_height="568dp"

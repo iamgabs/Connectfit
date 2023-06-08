@@ -22,13 +22,12 @@ import com.example.connectfit.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import javax.inject.Inject;
 
 public class SigninScreenFragment extends Fragment {
     String userId;
     UserGroupEnum userGroup = UserGroupEnum.STUDENT;
     FragmentSigninScreenBinding binding;
-    @Inject
+
     UserRepository userRepository;
 
     private FirebaseAuth mAuth;
@@ -38,6 +37,7 @@ public class SigninScreenFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        userRepository = new UserRepository();
     }
 
     @Override

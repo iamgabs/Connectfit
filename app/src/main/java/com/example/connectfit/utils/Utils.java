@@ -20,10 +20,8 @@ import androidx.annotation.Nullable;
 
 import com.example.connectfit.MainActivity;
 import com.example.connectfit.R;
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.enums.UserGroupEnum;
-import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 public class Utils {
@@ -55,8 +53,8 @@ public class Utils {
 
 
     public static boolean isUserLogged(Context context){
-        UserServiceImpl userService = new UserServiceImpl();
-        if(userService.getUserToken(context) != null) {
+        UserRepository userRepository = new UserRepository();
+        if(userRepository.getToken(context) != null) {
             return true;
         }
         return false;

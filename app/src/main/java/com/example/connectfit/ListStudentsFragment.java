@@ -18,15 +18,17 @@ import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentListStudentsBinding;
 import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class ListStudentsFragment extends Fragment {
 
-    UserServiceImpl userService;
+    UserRepository userRepository;
     FragmentListStudentsBinding binding;
 
     public ListStudentsFragment() {
@@ -38,7 +40,7 @@ public class ListStudentsFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentListStudentsBinding.inflate(inflater, container, false);
 
-        userService = new UserServiceImpl();
+        userRepository = new UserRepository();
 
         return binding.getRoot();
 
@@ -61,21 +63,16 @@ public class ListStudentsFragment extends Fragment {
 
         UserEntity currentUser = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
 
-        userService.getMyStudents(currentUser, new StudentsCallback() {
-            @Override
-            public void onStudentsReceived(List<UserEntity> students) {
+        userRepository.getMyStudents(currentUser).observe(getViewLifecycleOwner(), students -> {
+            if (students != null) {
                 dataList.addAll(students);
                 adapter.notifyDataSetChanged();
                 if(dataList.size() == 0) {
                     createAndShowSnackBar(view, "você ainda não possui inscritos!", "red");
                 }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
+            } else {
                 createAndShowSnackBar(view, "Não foi possível acessar seus inscritos", "red");
             }
         });
-
     }
 }

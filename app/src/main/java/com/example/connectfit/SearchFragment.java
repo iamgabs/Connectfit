@@ -20,20 +20,23 @@ import com.example.connectfit.adapters.ProfessionalAdapter;
 import com.example.connectfit.databinding.FragmentSearchBinding;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SearchFragment extends Fragment {
     FragmentSearchBinding binding;
-    UserServiceImpl userService;
+    UserRepository userRepository;
+
     public SearchFragment() {super(R.layout.fragment_search);}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userService = new UserServiceImpl();
+        userRepository = new UserRepository();
     }
 
     @Override
@@ -55,15 +58,11 @@ public class SearchFragment extends Fragment {
         ProfessionalAdapter adapter = new ProfessionalAdapter(getContext(), dataList);
         results.setAdapter(adapter);
 
-        userService.getAllProfessionals(new ProfessionalsCallback() {
-            @Override
-            public void onProfessionalsReceived(List<UserEntity> professionals) {
+        userRepository.getAllProfessionals().observe(getViewLifecycleOwner(), professionals -> {
+            if (professionals != null) {
                 dataList.addAll(professionals);
                 adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
+            } else {
                 createAndShowSnackBar(view, "não foi possível obter os profissionais!", "red");
             }
         });

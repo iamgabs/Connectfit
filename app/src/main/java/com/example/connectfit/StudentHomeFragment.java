@@ -28,7 +28,6 @@ import javax.inject.Inject;
 public class StudentHomeFragment extends Fragment{
 
     FragmentStudentHomeBinding binding;
-    @Inject
     UserRepository userRepository;
     UserEntity currentUser;
     UserConfigSingleton userConfigSingleton;
@@ -53,6 +52,8 @@ public class StudentHomeFragment extends Fragment{
                 currentUser = bundle.getParcelable("user_logged");
             }
         });
+
+        userRepository = new UserRepository();
 
         return binding.getRoot();
     }

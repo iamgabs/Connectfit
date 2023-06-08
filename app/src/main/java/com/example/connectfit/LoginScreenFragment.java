@@ -21,6 +21,7 @@ import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SigninErrorException;
+import com.example.connectfit.interfaces.MyAppComponent;
 import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
@@ -36,7 +37,7 @@ public class LoginScreenFragment extends Fragment {
     FragmentLoginScreenBinding binding;
     GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    @Inject
+
     UserRepository userRepository;
     UserEntity userLogged;
 
@@ -47,6 +48,7 @@ public class LoginScreenFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userRepository = new UserRepository();
     }
 
     @Override
@@ -81,21 +83,20 @@ public class LoginScreenFragment extends Fragment {
                 createAndShowSnackBar(view, "Por favor, preencha todos os campos!", "red");
             } else {
                 try {
-                    userRepository.getUser(email, password, getContext(), new UsersCallback() {
-                        @Override
-                        public void onUsersReceived(List<UserEntity> users) {
-                            userLogged = users.get(0);
-                            UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userLogged);
-                            Bundle bundle = new Bundle();
-                            bundle.putParcelable("user_logged", (Parcelable) userLogged);
-                            getParentFragmentManager().setFragmentResult("userBundle", bundle);
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            createAndShowSnackBar(view, e.getMessage(), "red");
+                    userRepository.getUser(email, password, getContext()).observe(getViewLifecycleOwner(), getUserResult -> {
+                        if (getUserResult.getException() != null) {
+                            Exception exception = getUserResult.getException();
+                            createAndShowSnackBar(view, exception.getMessage(), "red");
+                        } else {
+                             List<UserEntity> userList = getUserResult.getUserList();
+                             userLogged = userList.get(0);
+                             UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userLogged);
+                             Bundle bundle = new Bundle();
+                             bundle.putParcelable("user_logged", (Parcelable) userLogged);
+                             getParentFragmentManager().setFragmentResult("userBundle", bundle);
                         }
                     });
+
                     createAndShowSnackBar(view, "logado com sucesso!", "green");
                     new Handler().postDelayed(new Runnable() {
                         @Override

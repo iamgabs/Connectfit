@@ -1,6 +1,5 @@
 package com.example.connectfit.adapters;
 
-import static android.os.Build.VERSION_CODES.R;
 import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
 
 import android.app.AlertDialog;
@@ -15,9 +14,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 
+import com.example.connectfit.R;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
 
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO navigate to access training
+                            Navigation.findNavController(finalConvertView).navigate(R.id.myTrainingFragment);
                             createAndShowSnackBar(finalConvertView, "inscrito com sucesso!", "green");
                         }
                     });

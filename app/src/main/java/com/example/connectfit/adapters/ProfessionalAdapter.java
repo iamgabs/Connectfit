@@ -15,13 +15,16 @@ import androidx.annotation.NonNull;
 
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.models.entities.UserEntity;
-import com.example.connectfit.services.impl.UserServiceImpl;
+import com.example.connectfit.repositories.UserRepository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
     private LayoutInflater inflater;
-    private UserServiceImpl userService;
+    @Inject
+    UserRepository userRepository;
 
     public ProfessionalAdapter(Context context, List<UserEntity> users) {
         super(context, 0, users);
@@ -61,8 +64,7 @@ public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            UserServiceImpl userService = new UserServiceImpl();
-                            userService.doSubscribe(userLogged, user);
+                            userRepository.subscribeWithAProfessional(userLogged, user);
                             createAndShowSnackBar(finalConvertView, "inscrito com sucesso!", "green");
                         }
                     });

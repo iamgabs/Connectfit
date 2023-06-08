@@ -24,7 +24,7 @@ public class UserProfileFragment extends Fragment {
 
     FragmentUserProfileBinding binding;
     UserEntity user;
-    @Inject
+
     UserRepository userRepository;
 
     public UserProfileFragment() { super(R.layout.fragment_user_profile); }
@@ -32,6 +32,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userRepository = new UserRepository();
         user = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
     }
 
