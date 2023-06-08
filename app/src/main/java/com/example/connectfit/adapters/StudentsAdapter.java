@@ -41,12 +41,11 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
 
         if (user != null) {
             titleTextView.setText(user.getName());
-            bodyTextView.setText(user.getEmail());
         }
 
         // add click event
-        final int itemPosition = position;
         View finalConvertView = convertView;
+        final int itemPosition = position;
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +54,7 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
                     UserEntity userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
                     AlertDialog.Builder builder = new AlertDialog.Builder(finalConvertView.getContext());
                     builder.setTitle("Confirmação");
-                    builder.setMessage("Deseja acessar treino deste inscrito?");
+                    builder.setMessage("Deseja acessar o treino deste inscrito?");
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

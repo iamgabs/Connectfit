@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment{
 
         // check user group and switch images if its a professional
         trainningButton.setOnClickListener(l -> {
-            Navigation.findNavController(view).navigate(R.id.myStudents);
+            Navigation.findNavController(view).navigate(R.id.listStudentsFragment);
         });
 
         binding.imageButtonSettings.setOnClickListener(l -> {

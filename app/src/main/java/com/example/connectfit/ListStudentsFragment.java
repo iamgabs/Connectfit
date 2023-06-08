@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.adapters.ProfessionalAdapter;
+import com.example.connectfit.adapters.StudentsAdapter;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentListStudentsBinding;
 import com.example.connectfit.interfaces.StudentsCallback;
@@ -49,16 +50,11 @@ public class ListStudentsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // TODO PEGAR LISTA DE ALUNOS (MESMA DE PROFISISONAIS)
-        // TODO action AO CLICAR EM UM ALUNO, DEVE APARECER UM MESSAGE BOX
-        // TODO DE CONFIRMAÇÃO SOBRE CRIAR UM NOVO TREINO
-        // TODO CASO A RESPOSTA SEJA SIM, REDIRECIONA PARA A TELA DE CRIAÇÃO DE TREINOS PARA O ALUNO "X"
-
         ListView results = binding.resultsListView;
 
-        // get ALL users who are subscribers for professional "x"
+        // get ALL users who are subscribers for students "x"
         List<UserEntity> dataList = new ArrayList<UserEntity>();
-        ProfessionalAdapter adapter = new ProfessionalAdapter(getContext(), dataList);
+        StudentsAdapter adapter = new StudentsAdapter(getContext(), dataList);
         results.setAdapter(adapter);
 
         UserEntity currentUser = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
