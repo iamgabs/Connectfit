@@ -1,0 +1,47 @@
+<!-- list_item_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewTrainingName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="#8C52FF"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp" />
+
+    <TextView
+        android:id="@+id/textViewTrainingLink"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:background="#8C52FF"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textViewTrainingAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:background="#8C52FF"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textViewTrainingDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:background="#8C52FF"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+</LinearLayout>

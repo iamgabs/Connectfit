@@ -517,4 +517,35 @@ public class UserRepository {
         return studentsLiveData;
     }
 
+    public LiveData<List<UserEntity>> getMyProfessionals(UserEntity student) {
+        MutableLiveData<List<UserEntity>> professionalsLiveData = new MutableLiveData<>();
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
+
+        usersRef.whereArrayContains("subscribers", student.getId())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<UserEntity> professionalsList = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            UserEntity professional = new UserEntity();
+                            professional.setId(document.getId());
+                            professional.setName(document.getString("name"));
+                            professional.setSpecialization(document.getString("specializaitons"));
+                            professional.setSubscribers((List<String>) document.get("subscribers"));
+                            Long notificationsLong = document.getLong("notifications");
+                            int notifications = notificationsLong != null ? notificationsLong.intValue() : 0;
+                            professional.setNotifications(notifications);
+                            professional.setTrainingList(null);
+
+                            professionalsList.add(professional);
+                        }
+                        professionalsLiveData.setValue(professionalsList);
+                    } else {
+                        professionalsLiveData.setValue(null);
+                    }
+                });
+
+        return professionalsLiveData;
+    }
+
 }

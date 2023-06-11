@@ -1,13 +1,8 @@
 package com.example.connectfit.adapters;
 
-import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
-import static com.example.connectfit.utils.Utils.setStudentClicked;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +10,29 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
 import com.example.connectfit.R;
 import com.example.connectfit.database.UserConfigSingleton;
-import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.repositories.TrainingRepository;
 import com.example.connectfit.utils.Utils;
 
 import java.util.List;
 
-public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
-    private LayoutInflater inflater;
-    private FragmentManager fragmentManager;
+public class MyProfessionalsAdapter extends ArrayAdapter<UserEntity> {
 
-    public StudentsAdapter(Context context, List<UserEntity> users, FragmentManager fragmentManager) {
+    private LayoutInflater inflater;
+    private TrainingRepository trainingRepository;
+    private LifecycleOwner lifecycleOwner;
+    public MyProfessionalsAdapter(@NonNull Context context, List<UserEntity> users, LifecycleOwner lifecycleOwner) {
         super(context, 0, users);
         inflater = LayoutInflater.from(context);
-        this.fragmentManager = fragmentManager;
+        trainingRepository = new TrainingRepository();
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     @NonNull
@@ -45,7 +43,6 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
         }
 
         TextView titleTextView = convertView.findViewById(android.R.id.text1);
-        TextView bodyTextView = convertView.findViewById(android.R.id.text2);
         UserEntity user = getItem(position);
 
         if (user != null) {
@@ -53,8 +50,8 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
         }
 
         // add click event
-        View finalConvertView = convertView;
         final int itemPosition = position;
+        View finalConvertView = convertView;
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,31 +60,18 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
                     UserEntity userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
                     AlertDialog.Builder builder = new AlertDialog.Builder(finalConvertView.getContext());
                     builder.setTitle("Confirmação");
-                    builder.setMessage("Deseja acessar o treino deste inscrito?");
+                    builder.setMessage("Deseja acessar o treino deste profissional?");
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // set student clicked
-                            Utils.setStudentClicked(user);
-                            if(user.getTrainingList() != null && !user.getTrainingList().isEmpty()){
-                                TrainningEntity hasTraining = null;
-                                for(TrainningEntity t: user.getTrainingList()) {
-                                    if(t.getProfessional().equalsIgnoreCase(userLogged.getId())) {
-                                        Utils.setTrainningEntity(t);
-                                        hasTraining = t;
-                                    }
+                            Utils.setProfessionalClicked(clickedUser);
+                            trainingRepository.getTraininigById(userLogged.getId(), clickedUser.getId()).observe(lifecycleOwner, new Observer<TrainningEntity>() {
+                                @Override
+                                public void onChanged(TrainningEntity trainningEntity) {
+                                    Utils.setTrainningEntity(trainningEntity);
                                 }
-                                if(hasTraining != null) {
-                                    Navigation.findNavController(finalConvertView).navigate(R.id.myTrainingFragment);
-                                } else {
-                                    createAndShowSnackBar(finalConvertView, "Você ainda não possui treinos com este/a aluno(a)!", "red");
-                                    Navigation.findNavController(finalConvertView).navigate(R.id.createTrainingFragment);
-                                }
-                            } else {
-                                createAndShowSnackBar(finalConvertView, "Você ainda não possui treinos com este/a aluno(a)!", "red");
-                                Navigation.findNavController(finalConvertView).navigate(R.id.createTrainingFragment);
-                            }
-
+                            });
+                            Navigation.findNavController(finalConvertView).navigate(R.id.myTrainingFragment);
                         }
                     });
                     builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {

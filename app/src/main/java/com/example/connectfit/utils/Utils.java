@@ -23,12 +23,15 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.connectfit.MainActivity;
 import com.example.connectfit.R;
 import com.example.connectfit.enums.UserGroupEnum;
+import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 public class Utils {
     private static MutableLiveData<UserEntity> studentLiveData = new MutableLiveData<>();
+    private static MutableLiveData<TrainningEntity> trainningEntityMutableLiveData = new MutableLiveData<>();
+    private static MutableLiveData<UserEntity> professionalLiveData = new MutableLiveData<>();
 
     public static UserGroupEnum group = null;
 
@@ -70,5 +73,22 @@ public class Utils {
 
     public static LiveData<UserEntity> getStudentClicked() {
         return studentLiveData;
+    }
+
+    public static void setProfessionalClicked(UserEntity professional) {
+        professionalLiveData.setValue(professional);
+    }
+
+    public static LiveData<UserEntity> getProfessionalClicked() {
+        return professionalLiveData;
+    }
+
+
+    public static void setTrainningEntity(TrainningEntity t) {
+        trainningEntityMutableLiveData.setValue(t);
+    }
+
+    public static LiveData<TrainningEntity> getTrainningEntity() {
+        return trainningEntityMutableLiveData;
     }
 }

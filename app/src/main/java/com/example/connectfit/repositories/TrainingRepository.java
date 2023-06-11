@@ -12,6 +12,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,6 @@ public class TrainingRepository {
         DocumentReference trainingDocRef = trainingCollectionRef.document();
         String trainingId = trainingDocRef.getId();
 
-        // Cria um objeto TrainningEntity com os dados fornecidos
         TrainningEntity trainning = new TrainningEntity();
         trainning.setId(trainingId);
         trainning.setStudent(student.getId());
@@ -69,9 +70,58 @@ public class TrainingRepository {
         return trainingEntityResponse;
     }
 
+    public LiveData<TrainningEntity> getTraininigById(String studentId, String professionalId) {
+        MutableLiveData<TrainningEntity> trainingEntityResponse = new MutableLiveData<>();
+        CollectionReference trainingCollectionRef = FirebaseFirestore.getInstance().collection("training");
 
-    public boolean deleteTraining(String id) {
-        return false;
+        Query query = trainingCollectionRef
+                .whereEqualTo("professional", professionalId)
+                .whereEqualTo("student", studentId)
+                .limit(1);
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                QuerySnapshot snapshot = task.getResult();
+                if (snapshot != null && !snapshot.isEmpty()) {
+                    DocumentSnapshot trainingEntity = snapshot.getDocuments().get(0);
+                    TrainningEntity trainning = new TrainningEntity();
+                    trainning.setId(trainingEntity.getId());
+                    trainning.setStudent(trainingEntity.getString("student"));
+                    trainning.setProfessional(trainingEntity.getString("professional"));
+                    trainning.setTrainningList((List<Trainning>) trainingEntity.get("trainningList"));
+                    trainingEntityResponse.setValue(trainning);
+                } else {
+                    trainingEntityResponse.setValue(null);
+                }
+            } else {
+                trainingEntityResponse.setValue(null);
+            }
+        });
+
+        return trainingEntityResponse;
+    }
+
+    public LiveData<Boolean> deleteTraining(String id, UserEntity student) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        DocumentReference trainingDocRef = FirebaseFirestore.getInstance().collection("training").document(id);
+
+        trainingDocRef.delete().addOnCompleteListener(task -> {
+           if(task.isSuccessful()){
+               DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("users").document(student.getId());
+               userDocRef.update("trainingList", FieldValue.arrayRemove(id))
+                       .addOnCompleteListener(task1 -> {
+                           if (task1.isSuccessful()) {
+                               result.setValue(true);
+                           } else {
+                               result.setValue(false);
+                           }
+                       });
+           } else {
+               result.setValue(false);
+           }
+        });
+
+        return result;
     }
 
 }

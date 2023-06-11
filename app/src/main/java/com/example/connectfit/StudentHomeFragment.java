@@ -67,7 +67,7 @@ public class StudentHomeFragment extends Fragment{
 
         trainningButton.setOnClickListener(l -> {
             // navegar para a tela de treinos
-            Navigation.findNavController(view).navigate(R.id.myTrainingFragment);
+            Navigation.findNavController(view).navigate(R.id.myProfessionals);
         });
 
         binding.imageButtonSearch.setOnClickListener(l -> {
