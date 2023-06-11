@@ -1,6 +1,7 @@
 package com.example.connectfit;
 
 import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
+import static com.example.connectfit.utils.Utils.getStudentClicked;
 
 import android.os.Bundle;
 
@@ -8,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.TrainingRepository;
+import com.example.connectfit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +37,8 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
     List<Trainning> trainningList;
     TrainningAdapter adapter;
     TrainingRepository trainingRepository;
-    UserEntity student, userLogged;
+    UserEntity student;
+    UserEntity userLogged;
     public CreateTrainingFragment() {super(R.layout.fragment_create_training);}
 
     @Override
@@ -47,17 +53,6 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding =  FragmentCreateTrainingBinding.inflate(inflater, container, false);
-
-        getChildFragmentManager().setFragmentResultListener("studentBundle", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String key, @NonNull Bundle bundle) {
-                System.out.println(">>>>>entrou aqui");
-                student = bundle.getParcelable("student");
-                System.out.println("sId: ======== "+student.getId());
-            }
-
-        });
-
         return binding.getRoot();
     }
 
@@ -77,10 +72,10 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
             int amount = Integer.parseInt(String.valueOf(binding.editTextTrainningAmount.getText()));
             String link = String.valueOf(binding.editTextTrainningLink.getText());
             try {
-                // TODO professional id
                 trainningList.add(createNewTraining(name, description, amount, link));
                 // adicionar o nome dos treinos ao list view
                 adapter.notifyDataSetChanged();
+                clearEditTexts();
             } catch (RuntimeException runtimeException) {
                 if(runtimeException.getMessage().equals("You must to specify the training!")) {
                     createAndShowSnackBar(view, runtimeException.getMessage(), "red");
@@ -88,11 +83,17 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
             }
         });
 
-
         // PUSH TRAINING
         View createTrainning = binding.createButton;
         createTrainning.setOnClickListener(view1 -> {
-            trainingRepository.createTraining(student, userLogged, trainningList);
+            Utils.getStudentClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
+                @Override
+                public void onChanged(UserEntity student) {
+                    trainingRepository.createTraining(student, userLogged, trainningList);
+                    createAndShowSnackBar(view, "treino criado com sucesso!", "green");
+                    Navigation.findNavController(view).navigate(R.id.myTrainingFragment);
+                }
+            });
         });
 
     }
@@ -111,6 +112,14 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
     public void deleteTraining(int position) {
         trainningList.remove(position);
         adapter.notifyDataSetChanged();
+    }
+
+    private void clearEditTexts() {
+        // set all text fields
+        binding.editTextTrainningName.setText("");
+        binding.editTextTrainningDescription.setText("");
+        binding.editTextTrainningAmount.setText("");
+        binding.editTextTrainningLink.setText("");
     }
 
     private Trainning createNewTraining(String name, String description, int amount, String link) throws RuntimeException{

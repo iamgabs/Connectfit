@@ -10,7 +10,7 @@ import android.os.Handler;
 import android.provider.CalendarContract;
 import android.view.View;
 
-import com.example.connectfit.interfaces.DaggerMyAppComponent;
+
 import com.example.connectfit.interfaces.MyAppComponent;
 import com.example.connectfit.modules.MyAppModules;
 import com.google.android.material.snackbar.Snackbar;

@@ -17,14 +17,18 @@ import android.os.Vibrator;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.connectfit.MainActivity;
 import com.example.connectfit.R;
 import com.example.connectfit.enums.UserGroupEnum;
+import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 public class Utils {
+    private static MutableLiveData<UserEntity> studentLiveData = new MutableLiveData<>();
 
     public static UserGroupEnum group = null;
 
@@ -58,5 +62,13 @@ public class Utils {
             return true;
         }
         return false;
+    }
+
+    public static void setStudentClicked(UserEntity student) {
+        studentLiveData.setValue(student);
+    }
+
+    public static LiveData<UserEntity> getStudentClicked() {
+        return studentLiveData;
     }
 }

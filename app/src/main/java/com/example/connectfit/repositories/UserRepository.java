@@ -12,10 +12,12 @@ import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.exceptions.TokenErrorException;
+import com.example.connectfit.exceptions.UserNotFoundException;
 import com.example.connectfit.interfaces.CallbackSpecializations;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.interfaces.UsersCallback;
+import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.results.GetUserResult;
@@ -46,11 +48,11 @@ import javax.inject.Inject;
 public class UserRepository {
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore mFirestore;
+    private TrainingRepository trainingRepository;
 
     public UserRepository() {
         mAuth = FirebaseAuth.getInstance();
-        mFirestore = FirebaseFirestore.getInstance();
+        trainingRepository = new TrainingRepository();
     }
 
     /**
@@ -74,6 +76,8 @@ public class UserRepository {
                     List<String> subscribersEmptyList = new ArrayList<>();
                     userData.put("subscribers", subscribersEmptyList);
                     userData.put("notifications", 0);
+                    List<String> trainingStringEmptyList = new ArrayList<>();
+                    userData.put("trainingList", trainingStringEmptyList);
 
                     DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.getUid());
 
@@ -122,6 +126,44 @@ public class UserRepository {
 
                         UserEntity userEntity = new UserEntity(firebaseUser.getUid(), name, email, password, group, specialization);
                         userEntity.setNotifications(notifications);
+
+                        List<String> trainingListString = (List<String>) document.get("trainingList");
+
+                        List<TrainningEntity> trainingList = new ArrayList<>();
+
+                        if (trainingListString != null) {
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+                            for (String trainingId : trainingListString) {
+                                DocumentReference trainingRef = firestore.collection("training").document(trainingId);
+                                trainingRef.get().addOnCompleteListener(trainingTask -> {
+                                    if (trainingTask.isSuccessful()) {
+                                        DocumentSnapshot trainingDoc = trainingTask.getResult();
+
+                                        String trainningId = trainingDoc.getString("id");
+                                        String professionalId = trainingDoc.getString("professional");
+                                        String studentId = trainingDoc.getString("student");
+                                        List<Trainning> trainningList = (List<Trainning>) trainingDoc.get("trainningList");
+
+                                        TrainningEntity trainingEntity = new TrainningEntity();
+                                        trainingEntity.setId(trainingId);
+                                        trainingEntity.setProfessional(professionalId);
+                                        trainingEntity.setStudent(studentId);
+                                        trainingEntity.setTrainningList(trainningList);
+
+                                        trainingList.add(trainingEntity);
+                                    } else {
+                                        loginResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao obter usuário!")));
+                                    }
+
+                                    if (trainingList.size() == trainingListString.size()) {
+                                        userEntity.setTrainingList(trainingList);
+                                    }
+                                });
+                            }
+                        } else {
+                            userEntity.setTrainingList(null);
+                        }
                         generateToken(context);
 
                         List<UserEntity> userList = new ArrayList<>();
@@ -133,7 +175,7 @@ public class UserRepository {
                     }
                 });
             } else {
-                loginResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao logar!")));
+                loginResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao obter usuário!")));
             }
         });
 
@@ -141,9 +183,77 @@ public class UserRepository {
     }
 
 
-    public UserEntity getUserById(String id) {
-        return null;
+    public LiveData<GetUserResult> getUserById(String userId, Context context) {
+        MutableLiveData<GetUserResult> userResultLiveData = new MutableLiveData<>();
+
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(userId);
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+
+                if (document.exists()) {
+                    String name = document.getString("name");
+                    UserGroupEnum group = UserGroupEnum.valueOf(document.getString("group"));
+                    String specialization = document.getString("specializations");
+                    List<String> subscribers = (List<String>) document.get("subscribers");
+
+                    Long notificationsLong = document.getLong("notifications");
+                    int notifications = notificationsLong != null ? notificationsLong.intValue() : 0;
+
+                    UserEntity userEntity = new UserEntity(userId, name, group, specialization);
+                    userEntity.setNotifications(notifications);
+
+                    List<String> trainingListString = (List<String>) document.get("trainingList");
+
+                    List<TrainningEntity> trainingList = new ArrayList<>();
+
+                    if (trainingListString != null) {
+                        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+                        for (String trainingId : trainingListString) {
+                            DocumentReference trainingRef = firestore.collection("training").document(trainingId);
+                            trainingRef.get().addOnCompleteListener(trainingTask -> {
+                                if (trainingTask.isSuccessful()) {
+                                    DocumentSnapshot trainingDoc = trainingTask.getResult();
+
+                                    String trainningId = trainingDoc.getString("id");
+                                    String professionalId = trainingDoc.getString("professional");
+                                    String studentId = trainingDoc.getString("student");
+                                    List<Trainning> trainningList = (List<Trainning>) trainingDoc.get("trainningList");
+
+                                    TrainningEntity trainingEntity = new TrainningEntity();
+                                    trainingEntity.setId(trainningId);
+                                    trainingEntity.setProfessional(professionalId);
+                                    trainingEntity.setStudent(studentId);
+                                    trainingEntity.setTrainningList(trainningList);
+
+                                    trainingList.add(trainingEntity);
+                                } else {
+                                    userResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao obter usuário!")));
+                                }
+
+                                if (trainingList.size() == trainingListString.size()) {
+                                    userEntity.setTrainingList(trainingList);
+                                }
+                            });
+                        }
+                    } else {
+                        userEntity.setTrainingList(null);
+                        List<UserEntity> userList = new ArrayList<>();
+                        userList.add(userEntity);
+                        userResultLiveData.setValue(new GetUserResult(userList));
+                    }
+                } else {
+                    userResultLiveData.setValue(new GetUserResult(new UserNotFoundException("Usuário não encontrado!")));
+                }
+            } else {
+                userResultLiveData.setValue(new GetUserResult(task.getException()));
+            }
+        });
+
+        return userResultLiveData;
     }
+
 
     // método para perar token do usuário do firebase
 
@@ -339,7 +449,52 @@ public class UserRepository {
                             if (usersTask.isSuccessful()) {
                                 for (QueryDocumentSnapshot userDoc : usersTask.getResult()) {
                                     if (existingArrayOfStudentsId.contains(userDoc.getId())) {
-                                        UserEntity student = userDoc.toObject(UserEntity.class);
+                                        UserEntity student = new UserEntity();
+                                        student.setId(userDoc.getId());
+                                        student.setName(userDoc.getString("name"));
+                                        student.setSpecialization(userDoc.getString("specializaitons"));
+                                        student.setSubscribers((List<String>) userDoc.get("subscribers"));
+                                        Long notificationsLong = userDoc.getLong("notifications");
+                                        int notifications = notificationsLong != null ? notificationsLong.intValue() : 0;
+                                        student.setNotifications(notifications);
+
+                                        List<String> trainingListString = (List<String>) userDoc.get("trainingList");
+
+                                        List<TrainningEntity> trainingList = new ArrayList<>();
+
+                                        // convert list<String> of training into a list<UserEntity>
+                                        if (trainingListString != null) {
+                                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+                                            for (String trainingId : trainingListString) {
+                                                DocumentReference trainingRef = firestore.collection("training").document(trainingId);
+                                                trainingRef.get().addOnCompleteListener(trainingTask -> {
+                                                    if (trainingTask.isSuccessful()) {
+                                                        DocumentSnapshot trainingDoc = trainingTask.getResult();
+
+                                                        String trainningId = trainingDoc.getString("id");
+                                                        String professionalId = trainingDoc.getString("professional");
+                                                        String studentId = trainingDoc.getString("student");
+                                                        List<Trainning> trainningList = (List<Trainning>) trainingDoc.get("trainningList");
+
+                                                        TrainningEntity trainingEntity = new TrainningEntity();
+                                                        trainingEntity.setId(trainningId);
+                                                        trainingEntity.setProfessional(professionalId);
+                                                        trainingEntity.setStudent(studentId);
+                                                        trainingEntity.setTrainningList(trainningList);
+                                                        trainingList.add(trainingEntity);
+                                                    } else {
+                                                        studentsLiveData.setValue(null);
+                                                    }
+
+                                                    if (trainingList.size() == trainingListString.size()) {
+                                                        student.setTrainingList(trainingList);
+                                                    }
+                                                });
+                                            }
+                                        } else {
+                                            student.setTrainingList(null);
+                                        }
                                         studentsArray.add(student);
                                     }
                                 }

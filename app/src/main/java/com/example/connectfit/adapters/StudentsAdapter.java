@@ -1,6 +1,7 @@
 package com.example.connectfit.adapters;
 
 import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
+import static com.example.connectfit.utils.Utils.setStudentClicked;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.utils.Utils;
 
 import java.util.List;
 
@@ -65,11 +67,9 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            Utils.setStudentClicked(user);
                             if(user.getTrainingList() != null && !user.getTrainingList().isEmpty()){
                                 TrainningEntity hasTraining = null;
-                                Bundle bundle = new Bundle();
-                                bundle.putParcelable("student", (Parcelable) user);
-                                fragmentManager.setFragmentResult("studentBundle", bundle);
                                 for(TrainningEntity t: user.getTrainingList()) {
                                     if(t.getProfessional().equalsIgnoreCase(userLogged.getId())) {
                                         hasTraining = t;

@@ -59,6 +59,16 @@ public class UserEntity implements Parcelable {
         }
     };
 
+    public UserEntity(String userId, String name, UserGroupEnum group, String specialization) {
+        this.id = id;
+        this.name = name;
+        this.userGroupEnum = group;
+        this.specialization = specialization;
+        this.subscribers = null;
+        this.trainingList = null;
+        this.notifications = 0;
+    }
+
     public String getId() {
         return id;
     }
