@@ -32,35 +32,21 @@
         app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag"
         android:src="@drawable/mytrainning" />
 
-    <ImageButton
-        android:id="@+id/imageButtonSettings"
-        android:contentDescription="settings"
-        android:layout_width="159dp"
-        android:layout_height="157dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="185dp"
-        android:background="#8C52FF"
-        android:layout_marginEnd="10dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/imageButtonLogout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageButtonMyTraining"
-        android:src="@drawable/settings" />
 
     <ImageButton
         android:id="@+id/imageButtonLogout"
-        android:contentDescription="logout"
         android:layout_width="159dp"
         android:layout_height="157dp"
         android:layout_marginStart="31dp"
-        android:layout_marginTop="29dp"
-        android:layout_marginEnd="37dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="124dp"
         android:background="#8C52FF"
+        android:contentDescription="logout"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageButtonSettings"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonSearch"
-        android:src="@drawable/logout" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonSearch" />
 
     <ImageButton
         android:id="@+id/imageButtonSearch"

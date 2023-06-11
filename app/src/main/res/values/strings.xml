@@ -28,4 +28,5 @@
     <string name="search">digite para buscar</string>
     <string name="adicionar_especialidades">Adicionar especialidades</string>
     <string name="salvar">Salvar</string>
+    <string name="deletar">deletar</string>
 </resources>

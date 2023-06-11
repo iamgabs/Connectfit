@@ -75,11 +75,6 @@ public class StudentHomeFragment extends Fragment{
             Navigation.findNavController(view).navigate(R.id.searchFragment);
         });
 
-        binding.imageButtonSettings.setOnClickListener(l -> {
-            // navegar para a tela de configurações de usuário
-            Navigation.findNavController(view).navigate(R.id.userProfileFragment);
-        });
-
         binding.imageButtonLogout.setOnClickListener(l -> {
             // end user session
             userRepository.signout(getContext());

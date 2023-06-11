@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +56,8 @@ public class ListStudentsFragment extends Fragment {
 
         // get ALL users who are subscribers for students "x"
         List<UserEntity> dataList = new ArrayList<UserEntity>();
-        StudentsAdapter adapter = new StudentsAdapter(getContext(), dataList);
+        FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+        StudentsAdapter adapter = new StudentsAdapter(getContext(), dataList, fragmentManager);
         results.setAdapter(adapter);
 
         UserEntity currentUser = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();

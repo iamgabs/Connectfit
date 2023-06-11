@@ -1,8 +1,13 @@
 package com.example.connectfit.models.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.example.connectfit.enums.TrainningLinksEnum;
 
-public class Trainning {
+public class Trainning implements Parcelable {
     private String trainningName;
 
     private String description;
@@ -30,6 +35,13 @@ public class Trainning {
         this.description = description;
         this.trainningAmount = amount;
         this.link = link;
+    }
+
+    protected Trainning(Parcel in) {
+        trainningName = in.readString();
+        description = in.readString();
+        trainningAmount = in.readInt();
+        link = in.readString();
     }
 
     public String getTrainningName() {
@@ -62,5 +74,29 @@ public class Trainning {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public static final Creator<Trainning> CREATOR = new Creator<Trainning>() {
+        @Override
+        public Trainning createFromParcel(Parcel in) {
+            return new Trainning(in);
+        }
+
+        @Override
+        public Trainning[] newArray(int size) {
+            return new Trainning[size];
+        }
+    };
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(trainningName);
+        dest.writeString(description);
+        dest.writeInt(trainningAmount);
+        dest.writeString(link);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

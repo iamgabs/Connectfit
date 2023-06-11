@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.adapters.TrainningAdapter;
+import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentCreateTrainingBinding;
 import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
+import com.example.connectfit.models.entities.UserEntity;
+import com.example.connectfit.repositories.TrainingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +28,36 @@ import java.util.List;
 
 public class CreateTrainingFragment extends Fragment implements TrainingAdapterListener {
 
-
     FragmentCreateTrainingBinding binding;
     List<Trainning> trainningList;
     TrainningAdapter adapter;
+    TrainingRepository trainingRepository;
+    UserEntity student, userLogged;
     public CreateTrainingFragment() {super(R.layout.fragment_create_training);}
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        trainingRepository = new TrainingRepository();
+        userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding =  FragmentCreateTrainingBinding.inflate(inflater, container, false);
+
+        getChildFragmentManager().setFragmentResultListener("studentBundle", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String key, @NonNull Bundle bundle) {
+                System.out.println(">>>>>entrou aqui");
+                student = bundle.getParcelable("student");
+                System.out.println("sId: ======== "+student.getId());
+            }
+
+        });
+
         return binding.getRoot();
     }
 
@@ -54,6 +77,7 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
             int amount = Integer.parseInt(String.valueOf(binding.editTextTrainningAmount.getText()));
             String link = String.valueOf(binding.editTextTrainningLink.getText());
             try {
+                // TODO professional id
                 trainningList.add(createNewTraining(name, description, amount, link));
                 // adicionar o nome dos treinos ao list view
                 adapter.notifyDataSetChanged();
@@ -68,8 +92,7 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
         // PUSH TRAINING
         View createTrainning = binding.createButton;
         createTrainning.setOnClickListener(view1 -> {
-            // TODO deve cadastrar o treino (FIREBASE)
-
+            trainingRepository.createTraining(student, userLogged, trainningList);
         });
 
     }

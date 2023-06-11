@@ -16,6 +16,7 @@ import com.example.connectfit.interfaces.CallbackSpecializations;
 import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.interfaces.UsersCallback;
+import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.results.GetUserResult;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,7 +51,6 @@ public class UserRepository {
     public UserRepository() {
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
-        System.out.println("entrou no repository >>>>>>>>>>>>>>>>");
     }
 
     /**
@@ -361,7 +361,5 @@ public class UserRepository {
 
         return studentsLiveData;
     }
-
-
 
 }

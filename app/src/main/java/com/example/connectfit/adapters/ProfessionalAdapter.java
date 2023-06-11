@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
     private LayoutInflater inflater;
-    @Inject
     UserRepository userRepository;
 
     public ProfessionalAdapter(Context context, List<UserEntity> users) {
@@ -41,12 +40,10 @@ public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
         TextView titleTextView = convertView.findViewById(android.R.id.text1);
         TextView bodyTextView = convertView.findViewById(android.R.id.text2);
         UserEntity user = getItem(position);
+        userRepository = new UserRepository();
 
         if (user != null) {
             titleTextView.setText(user.getName());
-//            if(user.getSpecialization() != null) {
-//                bodyTextView.setText(user.getSpecialization());
-//            }
         }
 
         // add click event
@@ -64,7 +61,7 @@ public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
                     builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            userRepository.subscribeWithAProfessional(userLogged, user);
+                            userRepository.subscribeWithAProfessional(clickedUser, userLogged);
                             createAndShowSnackBar(finalConvertView, "inscrito com sucesso!", "green");
                         }
                     });

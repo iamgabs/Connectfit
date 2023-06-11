@@ -94,30 +94,30 @@ public class LoginScreenFragment extends Fragment {
                              Bundle bundle = new Bundle();
                              bundle.putParcelable("user_logged", (Parcelable) userLogged);
                              getParentFragmentManager().setFragmentResult("userBundle", bundle);
+                            createAndShowSnackBar(view, "logado com sucesso!", "green");
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
+                                        if(userLogged.getNotifications() > 0) {
+                                            createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
+                                            // clearNotifications
+                                            userRepository.clearNotifications(userLogged);
+                                        }
+                                        Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
+                                    } else {
+                                        if(userLogged.getNotifications() > 0) {
+                                            createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
+                                            // clearNotifications
+                                            userRepository.clearNotifications(userLogged);
+                                        }
+                                        Navigation.findNavController(view).navigate(R.id.homeFragment);
+                                    }
+                                }
+                            }, 4000);
                         }
                     });
-
-                    createAndShowSnackBar(view, "logado com sucesso!", "green");
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
-                                if(userLogged.getNotifications() > 0) {
-                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
-                                    // clearNotifications
-                                    userRepository.clearNotifications(userLogged);
-                                }
-                                Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
-                            } else {
-                                if(userLogged.getNotifications() > 0) {
-                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
-                                    // clearNotifications
-                                    userRepository.clearNotifications(userLogged);
-                                }
-                                Navigation.findNavController(view).navigate(R.id.homeFragment);
-                            }
-                        }
-                    }, 4000);
 
                 } catch (Exception exception) {
                     createAndShowSnackBar(view, "não foi possível logar!", "red");

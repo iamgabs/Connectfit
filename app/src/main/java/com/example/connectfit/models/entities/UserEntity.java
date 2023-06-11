@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.example.connectfit.enums.UserGroupEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserEntity implements Parcelable {
@@ -17,6 +18,7 @@ public class UserEntity implements Parcelable {
     private String specialization;
     private UserGroupEnum userGroupEnum;
     private List<String> subscribers;
+    private List<TrainningEntity> trainingList;
     private int notifications;
 
     public UserEntity() {}
@@ -29,6 +31,7 @@ public class UserEntity implements Parcelable {
         this.userGroupEnum = group;
         this.specialization = specialization;
         this.subscribers = null;
+        this.trainingList = null;
         this.notifications = 0;
     }
 
@@ -39,6 +42,8 @@ public class UserEntity implements Parcelable {
         email = in.readString();
         specialization = in.readString();
         subscribers = in.createStringArrayList();
+        trainingList = new ArrayList<>();
+        in.readTypedList(trainingList, TrainningEntity.CREATOR);
         notifications = in.readInt();
     }
 
@@ -119,6 +124,14 @@ public class UserEntity implements Parcelable {
         this.notifications = notifications;
     }
 
+    public List<TrainningEntity> getTrainingList() {
+        return trainingList;
+    }
+
+    public void setTrainingList(List<TrainningEntity> trainingList) {
+        this.trainingList = trainingList;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -133,6 +146,7 @@ public class UserEntity implements Parcelable {
         parcel.writeString(specialization);
         parcel.writeValue(userGroupEnum);
         parcel.writeStringList(subscribers);
+        parcel.writeList(trainingList);
         parcel.writeInt(notifications);
     }
 }

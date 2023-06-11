@@ -96,7 +96,11 @@ public class SigninScreenFragment extends Fragment {
                             binding.signinUserEmail.setText("");
                             binding.signinUserPassword.setText("");
                             createAndShowSnackBar(view, "usuário criado com sucesso!", "green");
-                            Navigation.findNavController(view).navigate(R.id.homeFragment);
+                            if(userGroup.equals(UserGroupEnum.STUDENT))  {
+                                Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
+                            } else {
+                                Navigation.findNavController(view).navigate(R.id.homeFragment);
+                            }
                         } catch (SigninErrorException signinErrorException) {
                             createAndShowSnackBar(view, signinErrorException.getMessage(), "red");
                         }

@@ -12,17 +12,15 @@
         android:id="@+id/view4"
         android:layout_width="421dp"
         android:layout_height="87dp"
-        android:background="#8C52FF" />
-
-    <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="243dp"
-        android:layout_height="203dp"
-        android:src="@drawable/connect_fit_main_img"
-        tools:layout_editor_absoluteX="84dp"
-        tools:layout_editor_absoluteY="-62dp" />
+        android:layout_marginBottom="2dp"
+        android:background="#8C52FF"
+        app:layout_constraintBottom_toTopOf="@+id/resultListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
+        android:id="@+id/resultListView"
         android:layout_width="412dp"
         android:layout_height="568dp"
         android:layout_marginTop="2dp"
@@ -30,7 +28,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view4"/>
+        app:layout_constraintTop_toBottomOf="@+id/view4" />
+
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="304dp"
+        android:layout_marginBottom="24dp"
+        android:textColor="#000"
+        android:background="#fff"
+        android:textSize="18sp"
+        android:text="@string/deletar"
+        app:layout_constraintBottom_toTopOf="@+id/resultListView"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
