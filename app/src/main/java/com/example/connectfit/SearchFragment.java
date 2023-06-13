@@ -18,14 +18,12 @@ import android.widget.ListView;
 
 import com.example.connectfit.adapters.ProfessionalAdapter;
 import com.example.connectfit.databinding.FragmentSearchBinding;
-import com.example.connectfit.interfaces.ProfessionalsCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
 public class SearchFragment extends Fragment {
     FragmentSearchBinding binding;
@@ -80,25 +78,6 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-//                String searchText = editable.toString().toLowerCase();
-//                List<UserEntity> filteredList = new ArrayList<>();
-//                for (UserEntity item : dataList) {
-//                    if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
-//                        filteredList.add(item);
-//                    }
-//                }
-//                if(filteredList.size() == 0){
-//                    for (UserEntity item : dataList) {
-//                        if (item.getName().toLowerCase().contains(searchText) || item.getSpecialization().toLowerCase().contains(searchText)) {
-//                            filteredList.add(item);
-//                        }
-//                    }
-//                }
-//
-//                UserAdapter adapter = (UserAdapter) results.getAdapter();
-//                adapter.clear();
-//                adapter.addAll(filteredList);
-//                adapter.notifyDataSetChanged();
             }
 
         });

@@ -8,17 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.adapters.ListTrainingAdapter;
-import com.example.connectfit.adapters.MyProfessionalsAdapter;
-import com.example.connectfit.adapters.TrainningAdapter;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentMyTrainingBinding;
 import com.example.connectfit.enums.UserGroupEnum;
@@ -30,8 +26,17 @@ import com.example.connectfit.repositories.UserRepository;
 import com.example.connectfit.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+/**
+ * MyTrainingFragment the fragment responsible to show all
+ * trainings about user "X" by professional "Y"
+ * if it exist
+ */
 public class MyTrainingFragment extends Fragment {
 
     FragmentMyTrainingBinding binding;
@@ -82,26 +87,44 @@ public class MyTrainingFragment extends Fragment {
             }
         });
 
-        // FIXME DEU PAU AQUI
+        // Get all training in training entity for user X and update list view
+
         Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
             @Override
             public void onChanged(TrainningEntity trainningEntity) {
-                List<Trainning> dataList = trainningEntity.getTrainningList();
-                ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), dataList);
+                String jsonString = String.valueOf(trainningEntity.getTrainningList());
+                List<Trainning> trainings = new ArrayList<>();
+
+                Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
+                Matcher matcher = pattern.matcher(jsonString);
+
+                while (matcher.find()) {
+                    String objectString = matcher.group(1);
+
+                    String link = extractValue(objectString, "link");
+                    String trainningName = extractValue(objectString, "trainningName");
+                    String description = extractValue(objectString, "description");
+                    int trainningAmount = Integer.parseInt(extractValue(objectString, "trainningAmount"));
+
+                    Trainning training = new Trainning(trainningName, description, trainningAmount, link);
+                    trainings.add(training);
+                }
+
+                ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
                 results.setAdapter(adapter);
-                // FIXME
 
             }
         });
 
 
-
+        // delete training for user x
         binding.buttonDelete.setOnClickListener(l -> {
             if(userLogged.getUserGroupEnum() != UserGroupEnum.STUDENT) {
                 Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
                     @Override
                     public void onChanged(TrainningEntity trainningEntity) {
                         trainingRepository.deleteTraining(trainningEntity.getId(), student);
+                        Utils.setTrainningEntity(null);
                     }
                 });
             } else {
@@ -109,4 +132,20 @@ public class MyTrainingFragment extends Fragment {
             }
         });
     }
+
+    // extract value for json object format [{... : ...}]
+    // obs: not a real json because there is not "key": "value"
+    // we need to use regex to get key: value of our string
+    private String extractValue(String objectString, String fieldName) {
+        String patternString = fieldName + "=([^,]+)";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(objectString);
+
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+
+        return null;
+    }
+
 }

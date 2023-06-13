@@ -20,9 +20,7 @@ import android.widget.TextView;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
-import com.example.connectfit.exceptions.SigninErrorException;
-import com.example.connectfit.interfaces.MyAppComponent;
-import com.example.connectfit.interfaces.UsersCallback;
+
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,7 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-import javax.inject.Inject;
 
 public class LoginScreenFragment extends Fragment {
 
@@ -96,26 +93,22 @@ public class LoginScreenFragment extends Fragment {
                              getParentFragmentManager().setFragmentResult("userBundle", bundle);
                             createAndShowSnackBar(view, "logado com sucesso!", "green");
 
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
-                                        if(userLogged.getNotifications() > 0) {
-                                            createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
-                                            // clearNotifications
-                                            userRepository.clearNotifications(userLogged);
-                                        }
-                                        Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
-                                    } else {
-                                        if(userLogged.getNotifications() > 0) {
-                                            createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
-                                            // clearNotifications
-                                            userRepository.clearNotifications(userLogged);
-                                        }
-                                        Navigation.findNavController(view).navigate(R.id.homeFragment);
-                                    }
+                            if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
+                                if(userLogged.getNotifications() > 0) {
+                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo treino, confira sua lista de treinos!");
+                                    // clearNotifications
+                                    userRepository.clearNotifications(userLogged);
                                 }
-                            }, 4000);
+                                Navigation.findNavController(view).navigate(R.id.studentHomeFragment);
+                            } else {
+                                if(userLogged.getNotifications() > 0) {
+                                    createAndShowNotificationWithVibration(getContext(), view, "Você tem um novo inscrito, acesse a sua lista de estudantes para criar seu treino!");
+                                    // clearNotifications
+                                    userRepository.clearNotifications(userLogged);
+                                }
+                                Navigation.findNavController(view).navigate(R.id.homeFragment);
+                            }
+
                         }
                     });
 

@@ -15,18 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.connectfit.adapters.ProfessionalAdapter;
 import com.example.connectfit.adapters.StudentsAdapter;
 import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentListStudentsBinding;
-import com.example.connectfit.interfaces.StudentsCallback;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 
 public class ListStudentsFragment extends Fragment {

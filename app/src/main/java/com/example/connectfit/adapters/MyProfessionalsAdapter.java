@@ -68,10 +68,11 @@ public class MyProfessionalsAdapter extends ArrayAdapter<UserEntity> {
                             trainingRepository.getTraininigById(userLogged.getId(), clickedUser.getId()).observe(lifecycleOwner, new Observer<TrainningEntity>() {
                                 @Override
                                 public void onChanged(TrainningEntity trainningEntity) {
-                                    Utils.setTrainningEntity(trainningEntity);
+                                    Utils.setTrainningEntity((TrainningEntity) trainningEntity);
+                               // navegar para a próxima tela apenas quando o treino for recebido
+                                    Navigation.findNavController(finalConvertView).navigate(R.id.myTrainingFragment);
                                 }
                             });
-                            Navigation.findNavController(finalConvertView).navigate(R.id.myTrainingFragment);
                         }
                     });
                     builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {

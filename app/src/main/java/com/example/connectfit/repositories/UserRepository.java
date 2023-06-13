@@ -13,10 +13,6 @@ import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.exceptions.SigninErrorException;
 import com.example.connectfit.exceptions.TokenErrorException;
 import com.example.connectfit.exceptions.UserNotFoundException;
-import com.example.connectfit.interfaces.CallbackSpecializations;
-import com.example.connectfit.interfaces.ProfessionalsCallback;
-import com.example.connectfit.interfaces.StudentsCallback;
-import com.example.connectfit.interfaces.UsersCallback;
 import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
@@ -34,7 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,8 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
+/**
+ * class UserRepository is the repository class for collection
+ * "user" in firebase
+ */
 public class UserRepository {
 
     private FirebaseAuth mAuth;
@@ -255,8 +252,6 @@ public class UserRepository {
     }
 
 
-    // método para perar token do usuário do firebase
-
     /**
      * @param context is the application context
      * @method generateToken should generate (get from firebase) a token
@@ -381,12 +376,13 @@ public class UserRepository {
         return specializationsLiveData;
     }
     /**
+     * @method subscribeWithAProfessional should be responsible to subscribe a student
+     * in a professional
      * @param professional is the professional which 'student' will subscribe
      * @param student      is the student that will subscribe in
      * @method subscribeWithAProfessional should subscribe a student to a professional
      */
     public void subscribeWithAProfessional(UserEntity professional, UserEntity student) {
-        // TODO adicionar ao campo subscribers (Array) o id do aluno
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(professional.getId());
 
         userRef.get().addOnCompleteListener(task -> {
@@ -517,6 +513,11 @@ public class UserRepository {
         return studentsLiveData;
     }
 
+    /**
+     * @method getMyProfessionals should get all professionals for user x
+     * @param student is the student we are looking for professionals
+     * @return a list of UserEntity (with all professionals)
+     */
     public LiveData<List<UserEntity>> getMyProfessionals(UserEntity student) {
         MutableLiveData<List<UserEntity>> professionalsLiveData = new MutableLiveData<>();
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
@@ -547,5 +548,39 @@ public class UserRepository {
 
         return professionalsLiveData;
     }
+
+    // test method
+    public void deleteUserByEmailAndPassword(String email, String password) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(authTask -> {
+                    if (authTask.isSuccessful()) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user != null) {
+                            String userId = user.getUid();
+                            DocumentReference userDocRef = FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(userId);
+
+                            userDocRef.delete().addOnCompleteListener(deleteTask -> {
+                                if (deleteTask.isSuccessful()) {
+                                    user.delete()
+                                            .addOnCompleteListener(deleteUserTask -> {
+                                                if (deleteUserTask.isCanceled()) {
+                                                    throw new RuntimeException("Não foi possível deletar");
+                                                }
+                                            });
+                                } else {
+                                    throw new RuntimeException("Não foi possível deletar");
+                                }
+                            });
+                        } else {
+                            throw new RuntimeException("Não foi possível obter o documento");
+                        }
+                    } else {
+                        throw new RuntimeException("autenticação falhou");
+                    }
+                });
+    }
+
 
 }
