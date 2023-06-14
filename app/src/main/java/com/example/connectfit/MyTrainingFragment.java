@@ -92,27 +92,31 @@ public class MyTrainingFragment extends Fragment {
         Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
             @Override
             public void onChanged(TrainningEntity trainningEntity) {
-                String jsonString = String.valueOf(trainningEntity.getTrainningList());
-                List<Trainning> trainings = new ArrayList<>();
+                if(trainningEntity.getTrainningList() != null) {
+                    String jsonString = String.valueOf(trainningEntity.getTrainningList());
+                    List<Trainning> trainings = new ArrayList<>();
 
-                Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
-                Matcher matcher = pattern.matcher(jsonString);
+                    Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
+                    Matcher matcher = pattern.matcher(jsonString);
 
-                while (matcher.find()) {
-                    String objectString = matcher.group(1);
+                    while (matcher.find()) {
+                        String objectString = matcher.group(1);
 
-                    String link = extractValue(objectString, "link");
-                    String trainningName = extractValue(objectString, "trainningName");
-                    String description = extractValue(objectString, "description");
-                    int trainningAmount = Integer.parseInt(extractValue(objectString, "trainningAmount"));
+                        String link = extractValue(objectString, "link");
+                        String trainningName = extractValue(objectString, "trainningName");
+                        String description = extractValue(objectString, "description");
+                        int trainningAmount = Integer.parseInt(extractValue(objectString, "trainningAmount"));
 
-                    Trainning training = new Trainning(trainningName, description, trainningAmount, link);
-                    trainings.add(training);
+                        Trainning training = new Trainning(trainningName, description, trainningAmount, link);
+                        trainings.add(training);
+                    }
+
+                    ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
+                    results.setAdapter(adapter);
+
+                } else {
+                   createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
                 }
-
-                ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
-                results.setAdapter(adapter);
-
             }
         });
 
@@ -123,8 +127,12 @@ public class MyTrainingFragment extends Fragment {
                 Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
                     @Override
                     public void onChanged(TrainningEntity trainningEntity) {
-                        trainingRepository.deleteTraining(trainningEntity.getId(), student);
-                        Utils.setTrainningEntity(null);
+                        if(trainningEntity != null) {
+                            trainingRepository.deleteTraining(trainningEntity.getId(), student);
+                            Utils.setTrainningEntity(null);
+                        } else {
+                            createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
+                        }
                     }
                 });
             } else {
@@ -133,9 +141,9 @@ public class MyTrainingFragment extends Fragment {
         });
     }
 
+    // chat gpt fez a boa aqui
     // extract value for json object format [{... : ...}]
     // obs: not a real json because there is not "key": "value"
-    // we need to use regex to get key: value of our string
     private String extractValue(String objectString, String fieldName) {
         String patternString = fieldName + "=([^,]+)";
         Pattern pattern = Pattern.compile(patternString);

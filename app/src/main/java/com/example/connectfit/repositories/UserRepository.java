@@ -161,7 +161,6 @@ public class UserRepository {
                         } else {
                             userEntity.setTrainingList(null);
                         }
-                        generateToken(context);
 
                         List<UserEntity> userList = new ArrayList<>();
                         userList.add(userEntity);
@@ -177,112 +176,6 @@ public class UserRepository {
         });
 
         return loginResultLiveData;
-    }
-
-
-    public LiveData<GetUserResult> getUserById(String userId, Context context) {
-        MutableLiveData<GetUserResult> userResultLiveData = new MutableLiveData<>();
-
-        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(userId);
-        userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-
-                if (document.exists()) {
-                    String name = document.getString("name");
-                    UserGroupEnum group = UserGroupEnum.valueOf(document.getString("group"));
-                    String specialization = document.getString("specializations");
-                    List<String> subscribers = (List<String>) document.get("subscribers");
-
-                    Long notificationsLong = document.getLong("notifications");
-                    int notifications = notificationsLong != null ? notificationsLong.intValue() : 0;
-
-                    UserEntity userEntity = new UserEntity(userId, name, group, specialization);
-                    userEntity.setNotifications(notifications);
-
-                    List<String> trainingListString = (List<String>) document.get("trainingList");
-
-                    List<TrainningEntity> trainingList = new ArrayList<>();
-
-                    if (trainingListString != null) {
-                        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-                        for (String trainingId : trainingListString) {
-                            DocumentReference trainingRef = firestore.collection("training").document(trainingId);
-                            trainingRef.get().addOnCompleteListener(trainingTask -> {
-                                if (trainingTask.isSuccessful()) {
-                                    DocumentSnapshot trainingDoc = trainingTask.getResult();
-
-                                    String trainningId = trainingDoc.getString("id");
-                                    String professionalId = trainingDoc.getString("professional");
-                                    String studentId = trainingDoc.getString("student");
-                                    List<Trainning> trainningList = (List<Trainning>) trainingDoc.get("trainningList");
-
-                                    TrainningEntity trainingEntity = new TrainningEntity();
-                                    trainingEntity.setId(trainningId);
-                                    trainingEntity.setProfessional(professionalId);
-                                    trainingEntity.setStudent(studentId);
-                                    trainingEntity.setTrainningList(trainningList);
-
-                                    trainingList.add(trainingEntity);
-                                } else {
-                                    userResultLiveData.setValue(new GetUserResult(new SigninErrorException("Erro ao obter usuário!")));
-                                }
-
-                                if (trainingList.size() == trainingListString.size()) {
-                                    userEntity.setTrainingList(trainingList);
-                                }
-                            });
-                        }
-                    } else {
-                        userEntity.setTrainingList(null);
-                        List<UserEntity> userList = new ArrayList<>();
-                        userList.add(userEntity);
-                        userResultLiveData.setValue(new GetUserResult(userList));
-                    }
-                } else {
-                    userResultLiveData.setValue(new GetUserResult(new UserNotFoundException("Usuário não encontrado!")));
-                }
-            } else {
-                userResultLiveData.setValue(new GetUserResult(task.getException()));
-            }
-        });
-
-        return userResultLiveData;
-    }
-
-
-    /**
-     * @param context is the application context
-     * @method generateToken should generate (get from firebase) a token
-     * and save it on SharedPreferences
-     */
-    public void generateToken(Context context) throws TokenErrorException {
-        Objects.requireNonNull(mAuth.getCurrentUser()).getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            String token = task.getResult().getToken();
-                            SharedPreferences sharedPreferences = context.getSharedPreferences("ConnectFitToken", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("loginToken", token);
-                            editor.apply();
-                        } else {
-                            throw new TokenErrorException("Erro ao obter o token de login");
-                        }
-                    }
-                });
-    }
-
-    /**
-     * @param context is the application context
-     * @return the token
-     * @method getToken should getToken from SharedPreferences
-     */
-    public String getToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("ConnectFitToken", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("loginToken", null);
     }
 
     /**
@@ -549,37 +442,52 @@ public class UserRepository {
         return professionalsLiveData;
     }
 
-    // test method
+    /** this is an auxiliary test method
+     * this method shouldn't be executed out of test scope
+     * @param email is the user email
+     * @param password is the user password
+     * with theses params, the method will get the user and delete
+     * all information from authentication and documents
+     * which are associated with "user x"
+     */
     public void deleteUserByEmailAndPassword(String email, String password) {
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(authTask -> {
-                    if (authTask.isSuccessful()) {
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        if (user != null) {
-                            String userId = user.getUid();
-                            DocumentReference userDocRef = FirebaseFirestore.getInstance()
-                                    .collection("users")
-                                    .document(userId);
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        String userId = user.getUid();
+                        DocumentReference userDocRef = FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(userId);
 
-                            userDocRef.delete().addOnCompleteListener(deleteTask -> {
-                                if (deleteTask.isSuccessful()) {
-                                    user.delete()
-                                            .addOnCompleteListener(deleteUserTask -> {
-                                                if (deleteUserTask.isCanceled()) {
-                                                    throw new RuntimeException("Não foi possível deletar");
-                                                }
-                                            });
-                                } else {
-                                    throw new RuntimeException("Não foi possível deletar");
-                                }
-                            });
-                        } else {
-                            throw new RuntimeException("Não foi possível obter o documento");
-                        }
+                        // delete from document "users"
+                        userDocRef.delete().addOnCompleteListener(deleteTask -> {
+                            if (deleteTask.isSuccessful()) {
+                                user.delete()
+                                        .addOnCompleteListener(deleteUserTask -> {
+                                            if (deleteUserTask.isCanceled()) {
+                                                throw new RuntimeException("Não foi possível deletar");
+                                            } else {
+                                                // delete from firebase auth
+                                                mAuth.getCurrentUser().delete()
+                                                        .addOnCompleteListener(task1 -> {
+                                                            if(task.isCanceled()) {
+                                                                throw new RuntimeException("Usuário não deletado da autenticação");
+                                                            }
+                                                        });
+                                            }
+                                        });
+                            } else {
+                                throw new RuntimeException("Não foi possível deletar");
+                            }
+                        });
                     } else {
-                        throw new RuntimeException("autenticação falhou");
+                        throw new RuntimeException("Não foi possível obter o documento");
                     }
-                });
+                } else {
+                    throw new RuntimeException("autenticação falhou");
+                }
+            });
     }
 
 

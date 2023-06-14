@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 public class SigninScreenFragment extends Fragment {
-    String userId;
     UserGroupEnum userGroup = UserGroupEnum.STUDENT;
     FragmentSigninScreenBinding binding;
 
@@ -132,6 +131,8 @@ public class SigninScreenFragment extends Fragment {
                 this.userGroup = UserGroupEnum.PERSONAL_TRAINER;
             } else if(response.equalsIgnoreCase("sou nutricionista")) {
                 this.userGroup = UserGroupEnum.NUTRITIONIST;
+            } else {
+                return false;
             }
             return true;
         }

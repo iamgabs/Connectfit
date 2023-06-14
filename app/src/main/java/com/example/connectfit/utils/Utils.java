@@ -58,15 +58,6 @@ public class Utils {
         }
     }
 
-
-    public static boolean isUserLogged(Context context){
-        UserRepository userRepository = new UserRepository();
-        if(userRepository.getToken(context) != null) {
-            return true;
-        }
-        return false;
-    }
-
     public static void setStudentClicked(UserEntity student) {
         studentLiveData.setValue(student);
     }

@@ -1,8 +1,6 @@
 package com.example.connectfit;
 
 import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
-import static com.example.connectfit.utils.Utils.group;
-import static com.example.connectfit.utils.Utils.isUserLogged;
 
 import android.os.Bundle;
 
@@ -18,12 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.example.connectfit.database.UserConfigSingleton;
-import com.example.connectfit.databinding.FragmentHomeBinding;
 import com.example.connectfit.databinding.FragmentStudentHomeBinding;
-import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
-import javax.inject.Inject;
 
 public class StudentHomeFragment extends Fragment{
 
