@@ -1,15 +1,12 @@
 package com.example.connectfit;
 
 import static com.example.connectfit.utils.Utils.createAndShowSnackBar;
-import static com.example.connectfit.utils.Utils.getStudentClicked;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LiveData;
+
 import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
@@ -19,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.adapters.TrainningAdapter;
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentCreateTrainingBinding;
 import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
@@ -37,7 +33,6 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
     List<Trainning> trainningList;
     TrainningAdapter adapter;
     TrainingRepository trainingRepository;
-    UserEntity student;
     UserEntity userLogged;
     public CreateTrainingFragment() {super(R.layout.fragment_create_training);}
 
@@ -45,7 +40,7 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         trainingRepository = new TrainingRepository();
-        userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
+        userLogged = new UserEntity();
     }
 
     @Override
@@ -53,47 +48,55 @@ public class CreateTrainingFragment extends Fragment implements TrainingAdapterL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding =  FragmentCreateTrainingBinding.inflate(inflater, container, false);
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView listView = binding.listview;
-        trainningList = new ArrayList<Trainning>();
-        adapter = new TrainningAdapter(getContext(), trainningList, this);
-        listView.setAdapter(adapter);
+        Utils.getUserLogged().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
+            @Override
+            public void onChanged(UserEntity userEntity) {
+                userLogged = userEntity;
 
-        // CREATE ONE TRAINING AND ADDING IT TO LIST
-        View addButton = binding.addButton;
-        addButton.setOnClickListener(view1 -> {
-            String name = String.valueOf(binding.editTextTrainningName.getText());
-            String description = String.valueOf(binding.editTextTrainningDescription.getText());
-            int amount = Integer.parseInt(String.valueOf(binding.editTextTrainningAmount.getText()));
-            String link = String.valueOf(binding.editTextTrainningLink.getText());
-            try {
-                trainningList.add(createNewTraining(name, description, amount, link));
-                // adicionar o nome dos treinos ao list view
-                adapter.notifyDataSetChanged();
-                clearEditTexts();
-            } catch (RuntimeException runtimeException) {
-                if(runtimeException.getMessage().equals("You must to specify the training!")) {
-                    createAndShowSnackBar(view, runtimeException.getMessage(), "red");
-                }
+                ListView listView = binding.listview;
+                trainningList = new ArrayList<Trainning>();
+                adapter = new TrainningAdapter(getContext(), trainningList, CreateTrainingFragment.this);
+                listView.setAdapter(adapter);
+
+                // CREATE ONE TRAINING AND ADDING IT TO LIST
+                View addButton = binding.addButton;
+                addButton.setOnClickListener(view1 -> {
+                    String name = String.valueOf(binding.editTextTrainningName.getText());
+                    String description = String.valueOf(binding.editTextTrainningDescription.getText());
+                    int amount = Integer.parseInt(String.valueOf(binding.editTextTrainningAmount.getText()));
+                    String link = String.valueOf(binding.editTextTrainningLink.getText());
+                    try {
+                        trainningList.add(createNewTraining(name, description, amount, link));
+                        // adicionar o nome dos treinos ao list view
+                        adapter.notifyDataSetChanged();
+                        clearEditTexts();
+                    } catch (RuntimeException runtimeException) {
+                        if(runtimeException.getMessage().equals("You must to specify the training!")) {
+                            createAndShowSnackBar(view, runtimeException.getMessage(), "red");
+                        }
+                    }
+                });
+
+                // PUSH TRAINING
+                View createTrainning = binding.createButton;
+                createTrainning.setOnClickListener(view1 -> {
+                    Utils.getStudentClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
+                        @Override
+                        public void onChanged(UserEntity student) {
+                            trainingRepository.createTraining(student, userLogged, trainningList);
+                            createAndShowSnackBar(view, "treino criado com sucesso!", "green");
+                            Navigation.findNavController(view).navigate(R.id.homeFragment);
+                        }
+                    });
+                });
             }
-        });
-
-        // PUSH TRAINING
-        View createTrainning = binding.createButton;
-        createTrainning.setOnClickListener(view1 -> {
-            Utils.getStudentClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
-                @Override
-                public void onChanged(UserEntity student) {
-                    trainingRepository.createTraining(student, userLogged, trainningList);
-                    createAndShowSnackBar(view, "treino criado com sucesso!", "green");
-                    Navigation.findNavController(view).navigate(R.id.myTrainingFragment);
-                }
-            });
         });
 
     }

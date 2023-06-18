@@ -124,19 +124,22 @@ public class SigninScreenFragment extends Fragment {
     }
 
     public boolean validResponseOfUserGroup(String response) {
+        boolean responseValue = false;
         if(!response.isEmpty()){
             if(response.equalsIgnoreCase("sou aluno")){
                 this.userGroup = UserGroupEnum.STUDENT;
+                responseValue = true;
             } else if(response.equalsIgnoreCase("sou personal")) {
                 this.userGroup = UserGroupEnum.PERSONAL_TRAINER;
+                responseValue = true;
             } else if(response.equalsIgnoreCase("sou nutricionista")) {
                 this.userGroup = UserGroupEnum.NUTRITIONIST;
+                responseValue = true;
             } else {
-                return false;
+                responseValue = false;;
             }
-            return true;
         }
-        return false;
+        return responseValue;
     }
 
 

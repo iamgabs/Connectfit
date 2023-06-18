@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment {
 
         // get ALL users if user group is Personal or Nutritionist
         List<UserEntity> dataList = new ArrayList<UserEntity>();
-        ProfessionalAdapter adapter = new ProfessionalAdapter(getContext(), dataList);
+        ProfessionalAdapter adapter = new ProfessionalAdapter(getContext(), dataList, getViewLifecycleOwner());
         results.setAdapter(adapter);
 
         userRepository.getAllProfessionals().observe(getViewLifecycleOwner(), professionals -> {

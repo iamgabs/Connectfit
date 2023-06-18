@@ -124,9 +124,4 @@ public class SigninScreenFragmentInteroperabilityTest {
                 .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
-    @AfterClass
-    public static void finishTests_deleteUserTestFromFirebase() {
-        userRepository.deleteUserByEmailAndPassword(user.getEmail(), user.getPassword());
-    }
-
 }

@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.fail;
 
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -28,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import kotlin.jvm.JvmField;
 
 @RunWith(AndroidJUnit4.class)
-public class MyProfessionalsInteroperabilityTest {
+public class MyTrainingFragmentInteroperabilityTest {
     static UserEntity user;
     static UserRepository userRepository;
 
@@ -52,7 +51,7 @@ public class MyProfessionalsInteroperabilityTest {
     }
 
     @Test
-    public void givenAnUser_whenLoggingSuccessfully_thenVerifyActionAtMyProfessionalsFragmentResultsFoundSuccessfully() {
+    public void givenAnUser_whenLoggingSuccessfully_thenVerifyActionAtUserProfileFragment() {
         onView(withId(R.id.changeScreenFromLoginToSignin)).perform(click());
         onView(withId(R.id.changeScreenFromSigninToLogin)).perform(click());
         onView(withId(R.id.email)).perform(typeText(user.getEmail()));
@@ -61,29 +60,45 @@ public class MyProfessionalsInteroperabilityTest {
 
         onView(withId(R.id.loginButton)).perform(click());
 
+        waitFiveSeconds();
+
+        onView(withId(R.id.imageButtonMyTraining)).perform(click());
+
+        waitFiveSeconds();
+
+        onView(withText("creuza")).perform(click());
+
+        onView(withText("Sim")).perform(click());
+
+        waitFiveSeconds();
+
+        // perform access to my training fragment
+        onView(withText("cadeira chinesa"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("realizar por 30 segundos"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("3"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("https://youtu.be/k9ETzvj6TIs"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+
+        onView(withText("realizar segundo o video"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("https://youtube.com/video"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("20"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withText("barra"))
+                .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
+
+    private void waitFiveSeconds() {
         CountDownLatch latch = new CountDownLatch(1);
         try {
             latch.await(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        onView(withId(R.id.imageButtonMyTraining)).perform(click());
-
-        try {
-            latch.await(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            // Perform action to verify if list view was updated with the professionals list
-            onView(withText("creuza"))
-                    .check(ViewAssertions.matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
-        } catch (Exception e) {
-            fail();
-        }
-
     }
 }

@@ -45,31 +45,6 @@ public class TrainingRepository {
                 });
     }
 
-    public LiveData<TrainningEntity> getTraininigById(String id) {
-        MutableLiveData<TrainningEntity> trainingEntityResponse = new MutableLiveData<>();
-
-        DocumentReference trainingRef = FirebaseFirestore.getInstance().collection("training").document(id);
-        trainingRef.get().addOnCompleteListener(task -> {
-          if(task.isSuccessful()) {
-              DocumentSnapshot document = task.getResult();
-              if(document != null && document.exists()) {
-                  List<TrainningEntity> trainningEntityList = new ArrayList<>();
-                  TrainningEntity trainning = new TrainningEntity();
-                  trainning.setId(document.getId());
-                  trainning.setStudent(document.getString("student"));
-                  trainning.setProfessional(document.getString("professional"));
-                  trainning.setTrainningList((List<Trainning>) document.get("trainningList"));
-                  trainningEntityList.add(trainning);
-                  trainingEntityResponse.setValue(trainning);
-              } else {
-                  trainingEntityResponse.setValue(null);
-              }
-          }
-        });
-
-        return trainingEntityResponse;
-    }
-
     public LiveData<TrainningEntity> getTraininigById(String studentId, String professionalId) {
         MutableLiveData<TrainningEntity> trainingEntityResponse = new MutableLiveData<>();
         CollectionReference trainingCollectionRef = FirebaseFirestore.getInstance().collection("training");
@@ -99,29 +74,6 @@ public class TrainingRepository {
         });
 
         return trainingEntityResponse;
-    }
-
-    public LiveData<Boolean> deleteTraining(String id, UserEntity student) {
-        MutableLiveData<Boolean> result = new MutableLiveData<>();
-        DocumentReference trainingDocRef = FirebaseFirestore.getInstance().collection("training").document(id);
-
-        trainingDocRef.delete().addOnCompleteListener(task -> {
-           if(task.isSuccessful()){
-               DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("users").document(student.getId());
-               userDocRef.update("trainingList", FieldValue.arrayRemove(id))
-                       .addOnCompleteListener(task1 -> {
-                           if (task1.isSuccessful()) {
-                               result.setValue(true);
-                           } else {
-                               result.setValue(false);
-                           }
-                       });
-           } else {
-               result.setValue(false);
-           }
-        });
-
-        return result;
     }
 
 }

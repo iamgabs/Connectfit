@@ -12,22 +12,27 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
+import com.example.connectfit.utils.Utils;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
     private LayoutInflater inflater;
     UserRepository userRepository;
 
-    public ProfessionalAdapter(Context context, List<UserEntity> users) {
+    private UserEntity userLogged;
+    private LifecycleOwner lifecycleOwner;
+
+    public ProfessionalAdapter(Context context, List<UserEntity> users, LifecycleOwner lifecycleOwner) {
         super(context, 0, users);
         inflater = LayoutInflater.from(context);
+        this.lifecycleOwner = lifecycleOwner;
+        this.userLogged = new UserEntity();
     }
 
     @NonNull
@@ -37,47 +42,56 @@ public class ProfessionalAdapter extends ArrayAdapter<UserEntity> {
             convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         }
 
-        TextView titleTextView = convertView.findViewById(android.R.id.text1);
-        TextView bodyTextView = convertView.findViewById(android.R.id.text2);
-        UserEntity user = getItem(position);
-        userRepository = new UserRepository();
+        final View convertView1 = convertView;
 
-        if (user != null) {
-            titleTextView.setText(user.getName());
-        }
-
-        // add click event
-        final int itemPosition = position;
-        View finalConvertView = convertView;
-        convertView.setOnClickListener(new View.OnClickListener() {
+        Utils.getUserLogged().observe(lifecycleOwner, new Observer<UserEntity>() {
             @Override
-            public void onClick(View v) {
-                UserEntity clickedUser = getItem(itemPosition);
-                if (clickedUser != null) {
-                    UserEntity userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(finalConvertView.getContext());
-                    builder.setTitle("Confirmação");
-                    builder.setMessage("Deseja se increver com este profissional?");
-                    builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            userRepository.subscribeWithAProfessional(clickedUser, userLogged);
-                            createAndShowSnackBar(finalConvertView, "inscrito com sucesso!", "green");
-                        }
-                    });
-                    builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // it will do nothing
-                        }
-                    });
-                    builder.create();
-                    builder.show();
+            public void onChanged(UserEntity userEntity) {
+                ProfessionalAdapter.this.userLogged = userEntity;
+
+                TextView titleTextView = convertView1.findViewById(android.R.id.text1);
+                TextView bodyTextView = convertView1.findViewById(android.R.id.text2);
+                UserEntity user = getItem(position);
+                userRepository = new UserRepository();
+
+                if (user != null) {
+                    titleTextView.setText(user.getName());
                 }
+
+                // add click event
+                final int itemPosition = position;
+                View finalConvertView = convertView1;
+                convertView1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UserEntity clickedUser = getItem(itemPosition);
+                        if (clickedUser != null) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(finalConvertView.getContext());
+                            builder.setTitle("Confirmação");
+                            builder.setMessage("Deseja se increver com este profissional?");
+                            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    userRepository.subscribeWithAProfessional(clickedUser, userLogged);
+                                    createAndShowSnackBar(finalConvertView, "inscrito com sucesso!", "green");
+                                }
+                            });
+                            builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // it will do nothing
+                                }
+                            });
+                            builder.create();
+                            builder.show();
+                        }
+                    }
+                });
             }
         });
 
-        return convertView;
+        return convertView1;
     }
 }
 

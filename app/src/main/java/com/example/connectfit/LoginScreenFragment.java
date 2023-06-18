@@ -10,19 +10,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentLoginScreenBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.UserRepository;
+import com.example.connectfit.utils.Utils;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -87,11 +86,11 @@ public class LoginScreenFragment extends Fragment {
                         } else {
                              List<UserEntity> userList = getUserResult.getUserList();
                              userLogged = userList.get(0);
-                             UserConfigSingleton.getInstance().setInstanceOfCurrentUser(userLogged);
+                             Utils.setUserLoggedLiveData(userLogged);
                              Bundle bundle = new Bundle();
                              bundle.putParcelable("user_logged", (Parcelable) userLogged);
                              getParentFragmentManager().setFragmentResult("userBundle", bundle);
-                            createAndShowSnackBar(view, "logado com sucesso!", "green");
+                             createAndShowSnackBar(view, "logado com sucesso!", "green");
 
                             if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
                                 if(userLogged.getNotifications() > 0) {

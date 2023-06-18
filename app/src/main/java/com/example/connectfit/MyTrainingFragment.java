@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.connectfit.adapters.ListTrainingAdapter;
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.databinding.FragmentMyTrainingBinding;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.models.entities.Trainning;
@@ -52,7 +51,7 @@ public class MyTrainingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         userRepository = new UserRepository();
         trainingRepository = new TrainingRepository();
-        userLogged = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
+        userLogged = new UserEntity();
         professional = new UserEntity();
         student = new UserEntity();
     }
@@ -62,6 +61,7 @@ public class MyTrainingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentMyTrainingBinding.inflate(inflater, container, false);
+
         return binding.getRoot();
     }
 
@@ -69,91 +69,84 @@ public class MyTrainingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ListView results = binding.resultListView;
-
-        UserEntity currentUser = UserConfigSingleton.getInstance().getInstanceOfCurrentUser();
-
-        Utils.getProfessionalClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
+        Utils.getUserLogged().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
             @Override
-            public void onChanged(UserEntity professional) {
-                MyTrainingFragment.this.professional = professional;
-            }
-        });
+            public void onChanged(UserEntity userEntity) {
+                userLogged = userEntity;
 
-        Utils.getStudentClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
-            @Override
-            public void onChanged(UserEntity student) {
-                MyTrainingFragment.this.student = student;
-            }
-        });
-
-        // Get all training in training entity for user X and update list view
-
-        Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
-            @Override
-            public void onChanged(TrainningEntity trainningEntity) {
-                if(trainningEntity.getTrainningList() != null) {
-                    String jsonString = String.valueOf(trainningEntity.getTrainningList());
-                    List<Trainning> trainings = new ArrayList<>();
-
-                    Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
-                    Matcher matcher = pattern.matcher(jsonString);
-
-                    while (matcher.find()) {
-                        String objectString = matcher.group(1);
-
-                        String link = extractValue(objectString, "link");
-                        String trainningName = extractValue(objectString, "trainningName");
-                        String description = extractValue(objectString, "description");
-                        int trainningAmount = Integer.parseInt(extractValue(objectString, "trainningAmount"));
-
-                        Trainning training = new Trainning(trainningName, description, trainningAmount, link);
-                        trainings.add(training);
-                    }
-
-                    ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
-                    results.setAdapter(adapter);
-
-                } else {
-                   createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
-                }
-            }
-        });
+                ListView results = binding.resultListView;
 
 
-        // delete training for user x
-        binding.buttonDelete.setOnClickListener(l -> {
-            if(userLogged.getUserGroupEnum() != UserGroupEnum.STUDENT) {
-                Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
+                Utils.getProfessionalClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
                     @Override
-                    public void onChanged(TrainningEntity trainningEntity) {
-                        if(trainningEntity != null) {
-                            trainingRepository.deleteTraining(trainningEntity.getId(), student);
-                            Utils.setTrainningEntity(null);
-                        } else {
-                            createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
-                        }
+                    public void onChanged(UserEntity professional) {
+                        MyTrainingFragment.this.professional = professional;
                     }
                 });
-            } else {
-            createAndShowSnackBar(view, "Você não tem permissão para deletar este treino!", "red");
+
+                Utils.getStudentClicked().observe(getViewLifecycleOwner(), new Observer<UserEntity>() {
+                    @Override
+                    public void onChanged(UserEntity student) {
+                        MyTrainingFragment.this.student = student;
+                    }
+                });
+
+                // Get all training in training entity for user X and update list view
+
+                try{
+                    Utils.getTrainningEntity().observe(getViewLifecycleOwner(), new Observer<TrainningEntity>() {
+                        @Override
+                        public void onChanged(TrainningEntity trainningEntity) {
+                            if(trainningEntity == null) {
+                                createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
+                            }
+                            if(trainningEntity.getTrainningList() != null) {
+                                String jsonString = String.valueOf(trainningEntity.getTrainningList());
+                                List<Trainning> trainings = new ArrayList<>();
+
+                                Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
+                                Matcher matcher = pattern.matcher(jsonString);
+
+                                while (matcher.find()) {
+                                    String objectString = matcher.group(1);
+
+                                    String link = extractValue(objectString, "link");
+                                    String trainningName = extractValue(objectString, "trainningName");
+                                    String description = extractValue(objectString, "description");
+                                    int trainningAmount = Integer.parseInt(extractValue(objectString, "trainningAmount"));
+
+                                    Trainning training = new Trainning(trainningName, description, trainningAmount, link);
+                                    trainings.add(training);
+                                }
+
+                                ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
+                                results.setAdapter(adapter);
+
+                            } else {
+                                createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
+                            }
+                        }
+                    });
+
+                }catch (NullPointerException nullPointerException){
+                    createAndShowSnackBar(view, "Sem treinos para serem exibidos", "red");
+                }
             }
-        });
+
+            // chat gpt fez a boa aqui
+            // extract value for json object format [{... : ...}]
+            // obs: not a real json because there is not "key": "value"
+            private String extractValue(String objectString, String fieldName) {
+                String patternString = fieldName + "=([^,]+)";
+                Pattern pattern = Pattern.compile(patternString);
+                Matcher matcher = pattern.matcher(objectString);
+
+                if (matcher.find()) {
+                    return matcher.group(1).trim();
+                }
+
+                return null;
+            }
+            });
     }
-
-    // chat gpt fez a boa aqui
-    // extract value for json object format [{... : ...}]
-    // obs: not a real json because there is not "key": "value"
-    private String extractValue(String objectString, String fieldName) {
-        String patternString = fieldName + "=([^,]+)";
-        Pattern pattern = Pattern.compile(patternString);
-        Matcher matcher = pattern.matcher(objectString);
-
-        if (matcher.find()) {
-            return matcher.group(1).trim();
-        }
-
-        return null;
-    }
-
 }

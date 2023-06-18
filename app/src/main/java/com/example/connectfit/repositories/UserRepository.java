@@ -7,22 +7,19 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.connectfit.database.UserConfigSingleton;
 import com.example.connectfit.enums.UserGroupEnum;
 import com.example.connectfit.exceptions.SearchErrorException;
 import com.example.connectfit.exceptions.SigninErrorException;
-import com.example.connectfit.exceptions.TokenErrorException;
-import com.example.connectfit.exceptions.UserNotFoundException;
 import com.example.connectfit.models.entities.Trainning;
 import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.results.GetUserResult;
+import com.example.connectfit.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,7 +33,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * class UserRepository is the repository class for collection
@@ -84,7 +80,7 @@ public class UserRepository {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         user.setId(firebaseUser.getUid());
-                                        UserConfigSingleton.getInstance().setInstanceOfCurrentUser(user);
+                                        Utils.setUserLoggedLiveData(user);
                                     }
                                 }
                             });
@@ -193,7 +189,7 @@ public class UserRepository {
         editor.apply();
 
         // remove user
-        UserConfigSingleton.getInstance().setInstanceOfCurrentUser(null);
+        Utils.setUserLoggedLiveData(null);
     }
 
     /**
@@ -252,22 +248,6 @@ public class UserRepository {
                 });
     }
 
-    public LiveData<String> getMySpecializations(String id) {
-        MutableLiveData<String> specializationsLiveData = new MutableLiveData<>();
-
-        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(id);
-        userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                String specializations = document.getString("specializations");
-                specializationsLiveData.setValue(specializations);
-            } else {
-                specializationsLiveData.setValue(null);
-            }
-        });
-
-        return specializationsLiveData;
-    }
     /**
      * @method subscribeWithAProfessional should be responsible to subscribe a student
      * in a professional
@@ -450,44 +430,42 @@ public class UserRepository {
      * all information from authentication and documents
      * which are associated with "user x"
      */
-    public void deleteUserByEmailAndPassword(String email, String password) {
+    public LiveData<Boolean> deleteUserByEmailAndPassword(String email, String password) {
+        MutableLiveData<Boolean> response = new MutableLiveData<>();
+        response.setValue(false);
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if (user != null) {
-                        String userId = user.getUid();
-                        DocumentReference userDocRef = FirebaseFirestore.getInstance()
-                                .collection("users")
-                                .document(userId);
+            if (task.isSuccessful()) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    String userId = user.getUid();
+                    DocumentReference userDocRef = FirebaseFirestore.getInstance()
+                            .collection("users")
+                            .document(userId);
 
-                        // delete from document "users"
-                        userDocRef.delete().addOnCompleteListener(deleteTask -> {
-                            if (deleteTask.isSuccessful()) {
-                                user.delete()
-                                        .addOnCompleteListener(deleteUserTask -> {
-                                            if (deleteUserTask.isCanceled()) {
-                                                throw new RuntimeException("Não foi possível deletar");
-                                            } else {
-                                                // delete from firebase auth
-                                                mAuth.getCurrentUser().delete()
-                                                        .addOnCompleteListener(task1 -> {
-                                                            if(task.isCanceled()) {
-                                                                throw new RuntimeException("Usuário não deletado da autenticação");
-                                                            }
-                                                        });
-                                            }
-                                        });
-                            } else {
-                                throw new RuntimeException("Não foi possível deletar");
-                            }
-                        });
-                    } else {
-                        throw new RuntimeException("Não foi possível obter o documento");
-                    }
+                    user.delete()
+                            .addOnCompleteListener(deleteUserTask -> {
+                                if (deleteUserTask.isCanceled()) {
+                                    response.setValue(false);
+                                } else {
+                                    // delete from document "users"
+                                    userDocRef.delete().addOnCompleteListener(deleteTask -> {
+                                        if (deleteTask.isCanceled()) {
+                                            response.setValue(false);
+                                        } else if (deleteTask.isSuccessful()) {
+                                            response.setValue(true);
+                                        }
+
+                                    });
+                                }
+                            });
                 } else {
-                    throw new RuntimeException("autenticação falhou");
+                    response.setValue(false);
                 }
-            });
+            } else {
+                response.setValue(false);
+            }
+        });
+        return response;
     }
 
 
