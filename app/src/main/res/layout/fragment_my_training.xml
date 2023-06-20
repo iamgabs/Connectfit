@@ -8,16 +8,18 @@
     tools:context=".MyTrainingFragment">
 
 
-    <View
-        android:id="@+id/view4"
-        android:layout_width="421dp"
-        android:layout_height="87dp"
-        android:layout_marginBottom="2dp"
-        android:background="#8C52FF"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view_tag"
+        android:name="com.example.connectfit.HeaderComponentFragment"
+        android:layout_width="414dp"
+        android:layout_height="71dp"
         app:layout_constraintBottom_toTopOf="@+id/resultListView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout="@layout/fragment_header_component" />
 
     <ListView
         android:id="@+id/resultListView"
@@ -28,15 +30,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view4" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_container_view_tag" />
 
     <Button
         android:id="@+id/buttonDeleteTraining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="304dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/deletar"
+        android:background="@drawable/rounded_button"
+        android:textColor="#000"
         app:layout_constraintBottom_toTopOf="@+id/resultListView"
         app:layout_constraintStart_toStartOf="parent" />
 
