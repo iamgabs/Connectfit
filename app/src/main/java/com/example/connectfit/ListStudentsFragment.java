@@ -67,6 +67,7 @@ public class ListStudentsFragment extends Fragment {
                 FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
                 StudentsAdapter adapter = new StudentsAdapter(getContext(), dataList, fragmentManager, getViewLifecycleOwner());
                 results.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
 
                 userRepository.getMyStudents(currentUser).observe(getViewLifecycleOwner(), students -> {
                     if (students != null) {

@@ -19,6 +19,7 @@ import com.example.connectfit.adapters.TrainningAdapter;
 import com.example.connectfit.databinding.FragmentCreateTrainingBinding;
 import com.example.connectfit.interfaces.TrainingAdapterListener;
 import com.example.connectfit.models.entities.Trainning;
+import com.example.connectfit.models.entities.TrainningEntity;
 import com.example.connectfit.models.entities.UserEntity;
 import com.example.connectfit.repositories.TrainingRepository;
 import com.example.connectfit.utils.Utils;

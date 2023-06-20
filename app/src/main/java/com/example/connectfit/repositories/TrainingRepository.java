@@ -76,4 +76,43 @@ public class TrainingRepository {
         return trainingEntityResponse;
     }
 
+    public LiveData<Boolean> deleteTraining(String id, UserEntity student) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference trainingCollectionRef = db.collection("training");
+        DocumentReference trainingDocRef = trainingCollectionRef.document(id);
+
+        trainingDocRef.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentReference userDocRef = db.collection("users").document(student.getId());
+                userDocRef.get().addOnCompleteListener(userTask -> {
+                    if (userTask.isSuccessful()) {
+                        DocumentSnapshot snapshot = userTask.getResult();
+                        if (snapshot != null && snapshot.exists()) {
+                            List<String> trainingList = (List<String>) snapshot.get("trainingList");
+                            trainingList.remove(id);
+                            userDocRef.update("trainingList", trainingList)
+                                    .addOnCompleteListener(updateTask -> {
+                                        if (updateTask.isSuccessful()) {
+                                            result.setValue(true);
+                                        } else {
+                                            result.setValue(false);
+                                        }
+                                    });
+                        } else {
+                            result.setValue(false);
+                        }
+                    } else {
+                        result.setValue(false);
+                    }
+                });
+            } else {
+                result.setValue(false);
+            }
+        });
+
+        return result;
+    }
+
+
 }

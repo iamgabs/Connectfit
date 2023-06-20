@@ -80,8 +80,6 @@ public class StudentsAdapter  extends ArrayAdapter<UserEntity> {
                                     if(user.getTrainingList() != null && !user.getTrainingList().isEmpty()){
                                         TrainningEntity hasTraining = null;
                                         for(TrainningEntity t: user.getTrainingList()) {
-                                            System.out.println(":>>>>>>>>>>>>>>>>>>>>>>>professional got: "+ t.getProfessional());
-                                            System.out.println(">>>>>>>>>>>>>>>>>>>>id: "+userLogged.getId());
                                             if(t.getProfessional().equalsIgnoreCase(userLogged.getId())) {
                                                 Utils.setTrainningEntity(t);
                                                 hasTraining = t;

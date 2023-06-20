@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -121,6 +122,26 @@ public class MyTrainingFragment extends Fragment {
 
                                 ListTrainingAdapter adapter = new ListTrainingAdapter(getContext(), trainings);
                                 results.setAdapter(adapter);
+
+
+
+                                binding.buttonDeleteTraining.setOnClickListener(l -> {
+                                    if(userLogged.getUserGroupEnum() == UserGroupEnum.STUDENT) {
+                                        createAndShowSnackBar(view, "você não tem permissão para deletar", "red");
+                                    } else {
+                                        trainingRepository.deleteTraining(trainningEntity.getId(), student).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                                            @Override
+                                            public void onChanged(Boolean aBoolean) {
+                                                if(aBoolean) {
+                                                    createAndShowSnackBar(view, "treino deletado com sucesso!", "green");
+                                                    Navigation.findNavController(view).navigate(R.id.homeFragment);
+                                                } else {
+                                                    createAndShowSnackBar(view, "Não foi possível deletar!", "red");
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
 
                             } else {
                                 createAndShowSnackBar(view, "Nenhum treino cadastrado", "red");
