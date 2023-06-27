@@ -28,6 +28,7 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     FragmentSearchBinding binding;
     UserRepository userRepository;
+    List<UserEntity> resultState;
 
     public SearchFragment() {super(R.layout.fragment_search);}
 
@@ -35,6 +36,7 @@ public class SearchFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userRepository = new UserRepository();
+        resultState = new ArrayList<>();
     }
 
     @Override
@@ -59,11 +61,14 @@ public class SearchFragment extends Fragment {
         userRepository.getAllProfessionals().observe(getViewLifecycleOwner(), professionals -> {
             if (professionals != null) {
                 dataList.addAll(professionals);
+                resultState.addAll(professionals);
                 adapter.notifyDataSetChanged();
             } else {
                 createAndShowSnackBar(view, "não foi possível obter os profissionais!", "red");
             }
         });
+
+
 
         search.addTextChangedListener(new TextWatcher() {
             @Override
@@ -78,8 +83,40 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                binding.searchButton.setOnClickListener(l -> {
+                    if(editable.toString().isEmpty()) {
+                        adapter.clear();
+                        if(dataList.size() == 0) {
+                            dataList.addAll(resultState);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                    if(dataList.size() == 0) {
+                        createAndShowSnackBar(view, "Nenhum profissional encontrado!", "red");
+                    } else {
+                        String searchText = editable.toString().toLowerCase();
+
+                        for(UserEntity u : dataList) {
+                            System.out.println(">>>>>>>>>>"+u.getSpecialization());
+                        }
+
+                        List<UserEntity> filteredList = new ArrayList<>();
+                        for (UserEntity item : dataList) {
+                            if ((item.getName() != null && item.getName().toLowerCase().contains(searchText)) ||
+                                    (item.getSpecialization() != null && item.getSpecialization().contains(searchText))) {
+                                filteredList.add(item);
+                            }
+                        }
+
+                        adapter.clear();
+                        adapter.addAll(filteredList);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
 
         });
+
+
     }
 }

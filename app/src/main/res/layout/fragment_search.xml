@@ -12,17 +12,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/editTextSearch"
-            android:paddingStart="10sp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:background="#8C52FF"
-            android:ems="10"
-            android:textColor="#ffffff"
-            android:textSize="20dp"
-            android:hint="@string/search"
-            android:inputType="textPersonName" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editTextSearch"
+                android:layout_width="0dp"
+                android:layout_height="53dp"
+                android:layout_weight="1"
+                android:background="#8C52FF"
+                android:ems="10"
+                android:hint="@string/search"
+                android:inputType="textPersonName"
+                android:paddingStart="10sp"
+                android:textColor="#ffffff"
+                android:textSize="20dp" />
+
+            <ImageButton
+                android:id="@+id/searchButton"
+                android:layout_width="67dp"
+                android:layout_height="53dp"
+                android:layout_gravity="right"
+                android:background="#8C52FF"
+                android:contentDescription="search"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search_button" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/resultsListView"
@@ -30,5 +47,6 @@
             android:layout_height="match_parent" />
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

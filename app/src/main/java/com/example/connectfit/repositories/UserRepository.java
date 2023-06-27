@@ -211,7 +211,8 @@ public class UserRepository {
                     user.setId(document.getId());
                     user.setName(document.getString("name"));
                     user.setEmail(document.getString("email"));
-                    user.setSpecialization(document.getString("specializations"));
+                    String specialization = document.getString("specializations");
+                    user.setSpecialization(specialization);
                     listOfProfessionals.add(user);
                 }
 
